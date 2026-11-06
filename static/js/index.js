@@ -275,100 +275,175 @@ function setupVideoPlayer(video) {
   updatePlay();
   updateVolume();
 }
-document.querySelectorAll("video").forEach(setupVideoPlayer);
-
-// Fixed type pills follow the active video; the media strip moves independently.
-document.querySelectorAll("[data-simulation-carousel]").forEach((group) => {
-  const track = group.querySelector(".simulation-track");
-  const slides = [...track.children];
-  const choices = [...group.querySelectorAll("[data-slide]")];
-  const previous = group.querySelector(".simulation-prev");
-  const next = group.querySelector(".simulation-next");
-  let active = 0, navigating = false, pendingFrame;
-  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  function highlight(index) {
-    active = Math.max(0, Math.min(slides.length - 1, index));
-    slides.forEach((slide, i) => slide.classList.toggle("is-active", i === active));
-    choices.forEach((button) => button.setAttribute("aria-pressed", String(Number(button.dataset.slide) === active)));
-    previous.disabled = active === 0;
-    next.disabled = active === slides.length - 1;
+// Build the loop before attaching player controls, so every visible copy works.
+document.querySelectorAll('[data-simulation-carousel] .simulation-track').forEach((track) => {
+  const originals = [...track.children];
+  for (const side of ['before', 'after']) {
+    const fragment = document.createDocumentFragment();
+    originals.forEach((slide) => {
+      const copy = slide.cloneNode(true);
+      copy.id = `${slide.id}--${side}`;
+      copy.classList.remove('is-active');
+      fragment.append(copy);
+    });
+    if (side === 'before') track.prepend(fragment); else track.append(fragment);
   }
-  function goTo(index) {
+});
+
+// Hidden variants and offscreen strips do not compete for thumbnail bandwidth.
+const posterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(({ target, isIntersecting }) => {
+    if (!isIntersecting) return;
+    target.poster = target.dataset.poster;
+    delete target.dataset.poster;
+    posterObserver.unobserve(target);
+  });
+}, { rootMargin: '250px 0px' });
+document.querySelectorAll('video[data-poster]').forEach((video) => posterObserver.observe(video));
+
+document.querySelectorAll('video').forEach(setupVideoPlayer);
+
+// Repeated strips keep both ends scrollable; the selected video stays centered.
+document.querySelectorAll('[data-simulation-carousel]').forEach((group) => {
+  const track = group.querySelector('.simulation-track');
+  const slides = [...track.children];
+  const count = slides.length / 3;
+  const choices = [...group.querySelectorAll('[data-slide]')];
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  let active = count, navigating = false, pendingFrame, settleTimer, drag;
+  let suppressClick = false, recentering = false;
+  const logical = (index) => (index % count + count) % count;
+  const position = (index) => slides[index].offsetLeft - track.offsetLeft - (track.clientWidth - slides[index].offsetWidth) / 2;
+  const nearest = () => {
+    let result = active, distance = Infinity;
+    slides.forEach((slide, index) => {
+      const delta = Math.abs(position(index) - track.scrollLeft);
+      if (delta < distance) { result = index; distance = delta; }
+    });
+    return result;
+  };
+  function highlight(index) {
+    active = index;
+    slides.forEach((slide, i) => slide.classList.toggle('is-active', i === active));
+    choices.forEach((button) => button.setAttribute('aria-pressed', String(Number(button.dataset.slide) === logical(active))));
+  }
+  function normalize() {
+    if (active >= count && active < count * 2) return;
+    const destination = count + logical(active);
+    const from = slides[active].querySelector('video');
+    const to = slides[destination].querySelector('video');
+    const source = videoResources.get(from), target = videoResources.get(to);
+    const playing = source.attached && !from.paused;
+    if (source.attached) {
+      target.position = from.currentTime;
+      target.duration = from.duration;
+      to.playbackRate = from.playbackRate;
+      source.release();
+    }
+    const shift = position(destination) - position(active);
+    recentering = true;
+    highlight(destination);
+    track.scrollTo({ left: track.scrollLeft + shift, behavior: 'instant' });
+    if (drag) drag.scroll += shift;
+    if (playing) { target.activate(); to.play().catch(() => {}); }
+    recentering = false;
+  }
+  function finish() {
+    clearTimeout(settleTimer);
+    if (drag?.moved) return;
+    navigating = false;
+    highlight(nearest());
+    normalize();
+    if (Math.abs(position(active) - track.scrollLeft) > 1) {
+      track.scrollTo({ left: position(active), behavior: reducedMotion.matches ? 'instant' : 'smooth' });
+    }
+  }
+  function goTo(index, behavior = reducedMotion.matches ? 'instant' : 'smooth') {
+    if (index < 0 || index >= slides.length) {
+      const step = index - active;
+      normalize();
+      index = active + step;
+    }
     highlight(index);
     navigating = true;
-    const bounds = track.getBoundingClientRect();
-    const slide = slides[active].getBoundingClientRect();
-    track.scrollTo({ left: track.scrollLeft + slide.left - bounds.left - (bounds.width - slide.width) / 2,
-      behavior: reducedMotion.matches ? "instant" : "smooth" });
+    track.scrollTo({ left: position(index), behavior });
+    clearTimeout(settleTimer);
+    settleTimer = setTimeout(finish, 180);
   }
-  choices.forEach((button) => button.addEventListener("click", () => goTo(Number(button.dataset.slide))));
-  previous.addEventListener("click", () => goTo(active - 1));
-  next.addEventListener("click", () => goTo(active + 1));
-  track.addEventListener("keydown", (event) => {
+  function choose(index) {
+    const matches = slides.map((_, i) => i).filter((i) => logical(i) === index);
+    goTo(matches.reduce((best, i) => Math.abs(i - active) < Math.abs(best - active) ? i : best));
+  }
+  choices.forEach((button) => button.addEventListener('click', () => choose(Number(button.dataset.slide))));
+  group.querySelector('.simulation-prev').addEventListener('click', () => goTo(active - 1));
+  group.querySelector('.simulation-next').addEventListener('click', () => goTo(active + 1));
+  track.addEventListener('keydown', (event) => {
     if (event.target !== track) return;
-    const targets = { ArrowLeft: active - 1, ArrowRight: active + 1, Home: 0, End: slides.length - 1 };
-    if (!(event.key in targets)) return;
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
     event.preventDefault();
-    goTo(targets[event.key]);
+    if (event.key === 'Home' || event.key === 'End') choose(event.key === 'Home' ? 0 : count - 1);
+    else goTo(active + (event.key === 'ArrowLeft' ? -1 : 1));
   });
-  track.addEventListener("wheel", () => { navigating = false; }, { passive: true });
-  track.addEventListener("scroll", () => {
+  track.addEventListener('wheel', () => { navigating = false; }, { passive: true });
+  track.addEventListener('scroll', () => {
+    clearTimeout(settleTimer);
+    settleTimer = setTimeout(finish, 160);
     if (pendingFrame) return;
     pendingFrame = requestAnimationFrame(() => {
       pendingFrame = null;
+      if (!navigating) highlight(nearest());
       const bounds = track.getBoundingClientRect();
-      if (!navigating) {
-        let nearest = 0, distance = Infinity;
-        slides.forEach((slide, i) => {
-          const rect = slide.getBoundingClientRect();
-          const delta = Math.abs(rect.left + rect.width / 2 - bounds.left - bounds.width / 2);
-          if (delta < distance) { nearest = i; distance = delta; }
-        });
-        highlight(nearest);
-      }
       slides.forEach((slide) => {
         const rect = slide.getBoundingClientRect();
         if (rect.right <= bounds.left || rect.left >= bounds.right) {
-          slide.querySelectorAll("video").forEach((video) => videoResources.get(video)?.release());
+          slide.querySelectorAll('video').forEach((video) => videoResources.get(video)?.release());
         }
       });
+      // Rebase long drags before they can reach a physical end of the strip.
+      if (drag?.moved && (active < Math.floor(count / 2) || active >= count * 2.5)) normalize();
     });
   }, { passive: true });
-  slides.forEach((slide, index) => slide.querySelector("video").addEventListener("play", () => highlight(index)));
-  track.addEventListener("focusin", (event) => {
-    const slide = event.target.closest(".simulation-slide");
-    if (slide) highlight(slides.indexOf(slide));
+  track.addEventListener('scrollend', finish);
+  slides.forEach((slide, index) => slide.querySelector('video').addEventListener('play', () => {
+    if (!recentering && index !== active) goTo(index);
+  }));
+  track.addEventListener('focusin', (event) => {
+    const slide = event.target.closest('.simulation-slide');
+    if (slide && slides.indexOf(slide) !== active) goTo(slides.indexOf(slide));
   });
-  let drag, suppressClick = false;
-  track.addEventListener("pointerdown", (event) => {
+  track.addEventListener('pointerdown', (event) => {
     navigating = false;
-    if (event.pointerType !== "mouse" || event.button !== 0 || event.target.closest(".video-controls")) return;
+    suppressClick = false;
+    if (event.pointerType !== 'mouse' || event.button !== 0 || event.target.closest('.video-controls')) return;
     suppressClick = false;
     drag = { id: event.pointerId, x: event.clientX, scroll: track.scrollLeft, moved: false };
   });
-  track.addEventListener("pointermove", (event) => {
+  track.addEventListener('pointermove', (event) => {
     if (!drag || drag.id !== event.pointerId) return;
     const delta = event.clientX - drag.x;
     if (!drag.moved && Math.abs(delta) > 6) {
       drag.moved = true;
       track.setPointerCapture(event.pointerId);
-      track.classList.add("is-dragging");
+      track.classList.add('is-dragging');
     }
     if (drag.moved) { event.preventDefault(); track.scrollLeft = drag.scroll - delta; }
   });
-  const endDrag = () => {
+  function endDrag() {
+    if (!drag) return;
     if (drag?.moved) suppressClick = true;
     drag = null;
-    track.classList.remove("is-dragging");
-  };
-  track.addEventListener("pointerup", endDrag);
-  track.addEventListener("pointercancel", endDrag);
-  track.addEventListener("lostpointercapture", endDrag);
-  track.addEventListener("click", (event) => {
+    track.classList.remove('is-dragging');
+    finish();
+  }
+  track.addEventListener('pointerup', endDrag);
+  track.addEventListener('pointercancel', endDrag);
+  track.addEventListener('lostpointercapture', endDrag);
+  track.addEventListener('click', (event) => {
     if (!suppressClick) return;
     event.preventDefault(); event.stopPropagation(); suppressClick = false;
   }, true);
-  highlight(0);
+  new ResizeObserver(() => goTo(count + logical(active), 'instant')).observe(track);
+  goTo(count, 'instant');
 });
 
 // Base / V.G. and repeated rollouts stay grouped by task.

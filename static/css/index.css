@@ -106,11 +106,11 @@ h2 { color: var(--ink); font-size: clamp(25px, 2.6vw, 32px); font-weight: 650; l
 .simulation-pill[aria-pressed="true"] { color: var(--blue); background: #eaf0ff; border-color: #b9ccff; box-shadow: 0 2px 7px rgb(49 95 202 / 9%); }
 .simulation-pill:hover { color: var(--blue); border-color: #b9ccff; }
 .simulation-carousel { position: relative; }
-.simulation-track { display: flex; gap: 14px; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; scroll-snap-type: x proximity; padding-block: 3px; cursor: grab; }
+.simulation-track { display: flex; gap: 14px; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; scroll-snap-type: x proximity; padding-block: 12px; cursor: grab; }
 .simulation-track::-webkit-scrollbar { display: none; }
 .simulation-track.is-dragging { cursor: grabbing; scroll-snap-type: none; user-select: none; }
-.simulation-slide { flex: 0 0 calc((100% - 42px) / 4); min-width: 0; scroll-snap-align: center; border-radius: 10px; box-shadow: 0 0 0 1px transparent; transition: box-shadow .18s; }
-.simulation-slide.is-active { box-shadow: 0 0 0 2px rgb(49 95 202 / 45%); }
+.simulation-slide { flex: 0 0 38%; min-width: 0; scroll-snap-align: center; border-radius: 10px; box-shadow: 0 0 0 1px transparent; opacity: .65; transform: scale(.9); transition: box-shadow .18s, transform .18s, opacity .18s; }
+.simulation-slide.is-active { opacity: 1; transform: scale(1); box-shadow: 0 0 0 2px rgb(49 95 202 / 45%); }
 .simulation-slide .media-frame.has-media { aspect-ratio: var(--simulation-aspect); border: 0; background: var(--tint); }
 .simulation-slide .loaded-media { inset: 0; }
 .simulation-arrow { position: absolute; top: 50%; z-index: 3; display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 1px solid var(--line); border-radius: 50%; color: var(--ink); background: #fff; box-shadow: 0 3px 12px rgb(25 35 55 / 10%); transform: translateY(-50%); }
@@ -120,8 +120,8 @@ h2 { color: var(--ink); font-size: clamp(25px, 2.6vw, 32px); font-weight: 650; l
 .simulation-dots { display: flex; justify-content: center; gap: 7px; margin-top: 17px; }
 .simulation-dot { width: 8px; height: 8px; border: 1px solid #ccd5e2; border-radius: 50%; padding: 0; background: #fff; }
 .simulation-dot[aria-pressed="true"] { border-color: var(--blue); background: var(--blue); }
-@media(max-width: 1000px) { .simulation-slide { flex-basis: calc((100% - 28px) / 3); } }
-@media(max-width: 760px) { .simulation-slide { flex-basis: calc((100% - 14px) / 2); } .simulation-task-heading h3 { font-size: 20px; } .simulation-tasks { gap: 42px; } .simulation-pill { padding: 6px 11px; } }
+@media(max-width: 1000px) { .simulation-slide { flex-basis: 42%; } }
+@media(max-width: 760px) { .simulation-slide { flex-basis: 60%; } .simulation-task-heading h3 { font-size: 20px; } .simulation-tasks { gap: 42px; } .simulation-pill { padding: 6px 11px; } }
 @media(max-width: 480px) { .simulation-slide { flex-basis: 84%; } .simulation-prev { left: -10px; } .simulation-next { right: -10px; } }
 .real-task-grid { display: grid; row-gap: 28px; }
 .real-task-row { column-gap: 28px; row-gap: 12px; }
@@ -170,6 +170,8 @@ h3 { margin-bottom: 5px; color: #2b3951; font-size: 15px; font-weight: 600; lett
 .comparison-dot.before { background: #99a5b8; }
 .comparison-dot.after { background: #439f8c; }
 .comparison-grid .media-frame { aspect-ratio: 16 / 9; }
+#drawer-rtc .media-frame { border: 0; }
+#drawer-rtc .loaded-media { inset: 0; object-fit: cover; }
 .accent-frame { background-color: #f0f7f5; border-color: #dbe9e3; }
 .accent-frame .placeholder-icon { color: #6c978c; border-color: #ccdfd7; }
 .accent-frame .placeholder-title { color: #5f8178; }
@@ -310,3 +312,10 @@ h3 { margin-bottom: 5px; color: #2b3951; font-size: 15px; font-weight: 600; lett
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition: none !important; }
 }
+
+@media (prefers-reduced-motion: reduce) { .simulation-slide { transition: none; } }
+/* Match every media container to its section; no dark layer or inset seam. */
+.media-frame.has-media, .teaser-frame { background: transparent; border: 0; }
+.loaded-media { inset: 0; background: transparent; }
+.real-task-row .media-frame, .simulation-slide .media-frame.has-media { background: transparent; }
+.custom-video-player:fullscreen { background: #fff; }
