@@ -1,0 +1,499 @@
+"use strict";
+
+// Load on demand; keep playing videos independent and release hidden media.
+const videoResources = new Map();
+function manageVideoResource(video) {
+  const sources = [...video.querySelectorAll("source")].map((node) => ({
+    node, url: node.dataset.src || node.getAttribute("src"),
+  }));
+  const directUrl = video.dataset.src || video.getAttribute("src");
+  const resource = { attached: false, position: 0, duration: NaN, generation: 0, pendingSeek: null };
+  const applyPendingSeek = () => {
+    if (resource.pendingSeek === null || !Number.isFinite(video.duration) || video.duration <= 0) return;
+    const target = Math.min(resource.pendingSeek / 100 * video.duration, Math.max(0, video.duration - 0.05));
+    video.currentTime = target;
+    resource.position = target;
+    resource.pendingSeek = null;
+  };
+  resource.release = () => {
+    if (!resource.attached) return;
+    resource.position = Number.isFinite(video.currentTime) ? video.currentTime : 0;
+    if (Number.isFinite(video.duration)) resource.duration = video.duration;
+    resource.attached = false;
+    resource.generation++;
+    video.pause();
+    video.removeAttribute("src");
+    sources.forEach(({ node }) => node.removeAttribute("src"));
+    video.preload = "none";
+    video.load();
+  };
+  resource.activate = () => {
+    videoResources.forEach((other, media) => {
+      if (other === resource || !media.paused) return;
+      const bounds = media.getBoundingClientRect();
+      if (!bounds.width || !bounds.height || bounds.bottom <= 0 || bounds.top >= window.innerHeight ||
+          bounds.right <= 0 || bounds.left >= window.innerWidth) other.release();
+    });
+    if (resource.attached) return;
+    resource.attached = true;
+    const generation = ++resource.generation;
+    video.addEventListener("loadedmetadata", () => {
+      if (generation !== resource.generation) return;
+      resource.duration = video.duration;
+      if (resource.pendingSeek !== null) {
+        applyPendingSeek();
+      } else if (resource.position > 0 && Number.isFinite(video.duration)) {
+        video.currentTime = Math.min(resource.position, Math.max(0, video.duration - 0.05));
+      }
+    }, { once: true });
+    if (directUrl) video.src = directUrl;
+    sources.forEach(({ node, url }) => { if (url) node.setAttribute("src", url); });
+    video.preload = "auto";
+    video.load();
+  };
+  resource.seekToPercent = (percent) => {
+    resource.pendingSeek = Math.max(0, Math.min(100, percent));
+    resource.activate();
+    if (video.readyState >= 1) applyPendingSeek();
+  };
+  video.preload = "none";
+  video.removeAttribute("src");
+  sources.forEach(({ node, url }) => {
+    if (url) node.dataset.src = url;
+    node.removeAttribute("src");
+  });
+  if (video.currentSrc || video.readyState) video.load();
+  videoResources.set(video, resource);
+  return resource;
+}
+
+// Keep playback controls together; only the overview player exposes its audio.
+function setupVideoPlayer(video) {
+  const frame = video.closest(".media-frame");
+  if (!frame || frame.querySelector(".video-controls")) return;
+  const resource = manageVideoResource(video);
+  const audioEnabled = frame.dataset.audio === "true";
+
+  const silence = () => {
+    video.defaultMuted = true;
+    if (!video.muted) video.muted = true;
+    if (video.volume !== 0) video.volume = 0;
+  };
+  if (audioEnabled) {
+    video.defaultMuted = false;
+    video.muted = false;
+    video.volume = 1;
+  } else {
+    silence();
+    video.addEventListener("volumechange", silence);
+  }
+  video.defaultPlaybackRate = 1;
+  video.playbackRate = 1;
+
+  const controls = document.createElement("div");
+  controls.className = "video-controls";
+  controls.setAttribute("role", "group");
+  controls.setAttribute("aria-label", `Video controls: ${video.getAttribute("aria-label") || "Research video"}`);
+  controls.innerHTML = `
+    <div class="video-control-row">
+      <button class="video-play" type="button" aria-label="Play" title="Play">▶</button>
+      <input class="video-seek" type="range" min="0" max="100" step="0.01" value="0" aria-label="Seek video">
+      <span class="video-time">0:00</span>
+      ${audioEnabled ? `<div class="video-volume-control">
+        <button class="video-volume-button" type="button" aria-label="Mute" title="Mute"></button>
+        <input class="video-volume" type="range" min="0" max="1" step="0.01" value="1" aria-label="Volume" aria-valuetext="100%">
+      </div>` : ""}
+      <select class="video-speed" aria-label="Playback speed" title="Playback speed">
+        <option value="0.5">0.5×</option>
+        <option value="0.75">0.75×</option>
+        <option value="1" selected>1×</option>
+        <option value="1.25">1.25×</option>
+        <option value="1.5">1.5×</option>
+        <option value="2">2×</option>
+      </select>
+      <button class="video-fullscreen" type="button" aria-label="Enter fullscreen" title="Enter fullscreen"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M9 3H3v6m12-6h6v6M3 15v6h6m12-6v6h-6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>`;
+  const play = controls.querySelector(".video-play");
+  const seek = controls.querySelector(".video-seek");
+  const time = controls.querySelector(".video-time");
+  const volumeButton = controls.querySelector(".video-volume-button");
+  const volume = controls.querySelector(".video-volume");
+  const speed = controls.querySelector(".video-speed");
+  const fullscreen = controls.querySelector(".video-fullscreen");
+  const formatTime = (seconds) => {
+    if (!Number.isFinite(seconds)) return "0:00";
+    return `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, "0")}`;
+  };
+  let scrubbing = false;
+  const updateTime = () => {
+    const duration = Number.isFinite(video.duration) ? video.duration : resource.duration;
+    const currentTime = resource.attached ? video.currentTime : resource.position;
+    if (!scrubbing) {
+      seek.value = resource.pendingSeek !== null ? String(resource.pendingSeek)
+        : Number.isFinite(duration) && duration > 0 ? String(currentTime / duration * 100) : "0";
+    }
+    seek.style.setProperty("--progress", `${seek.value}%`);
+    seek.setAttribute("aria-valuetext", `${formatTime(currentTime)} of ${formatTime(duration)}`);
+    time.textContent = formatTime(currentTime);
+    time.title = Number.isFinite(duration)
+      ? `${formatTime(currentTime)} / ${formatTime(duration)}`
+      : formatTime(currentTime);
+  };
+  let hideControlsTimer;
+  const revealControls = () => {
+    clearTimeout(hideControlsTimer);
+    frame.classList.add("controls-visible");
+    if (!video.paused && !scrubbing) {
+      hideControlsTimer = setTimeout(() => frame.classList.remove("controls-visible"), 1800);
+    }
+  };
+  const updatePlay = () => {
+    play.innerHTML = video.paused
+      ? '<svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="m9 5 10 7-10 7Z" fill="currentColor" stroke="currentColor" stroke-linejoin="round"/></svg>'
+      : '<svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M8 6v12M16 6v12" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>';
+    frame.classList.toggle("is-playing", !video.paused);
+    revealControls();
+    play.title = video.paused ? "Play" : "Pause";
+    play.setAttribute("aria-label", play.title);
+  };
+  const updateVolume = () => {
+    if (!audioEnabled) return;
+    const level = video.muted ? 0 : video.volume;
+    volume.value = String(level);
+    volume.style.setProperty("--volume", `${level * 100}%`);
+    volume.setAttribute("aria-valuetext", `${Math.round(level * 100)}%`);
+    const muted = level === 0;
+    volumeButton.innerHTML = muted
+      ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6L8 10H4Z" fill="currentColor"/><path d="m17 10 4 4m0-4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'
+      : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6L8 10H4Z" fill="currentColor"/><path d="M16 9a4 4 0 0 1 0 6m2-8a7 7 0 0 1 0 10" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>';
+    volumeButton.title = muted ? "Unmute" : "Mute";
+    volumeButton.setAttribute("aria-label", volumeButton.title);
+  };
+  const togglePlay = async () => {
+    if (!video.paused) { video.pause(); return; }
+    if (!audioEnabled) silence();
+    resource.activate();
+    const generation = resource.generation;
+    try { await video.play(); }
+    catch (error) {
+      if (generation !== resource.generation || error.name === "AbortError") return;
+      console.warn("Video playback failed", video.getAttribute("aria-label"), error);
+      resource.release();
+      play.title = "Playback unavailable. Try again.";
+    }
+  };
+  play.addEventListener("click", togglePlay);
+  video.addEventListener("click", (event) => {
+    if (event.pointerType === "touch" && !video.paused && !frame.classList.contains("controls-visible")) {
+      revealControls();
+      return;
+    }
+    togglePlay();
+  });
+  frame.addEventListener("pointermove", revealControls);
+  frame.addEventListener("pointerenter", revealControls);
+  frame.addEventListener("pointerleave", () => {
+    if (!video.paused && !scrubbing) {
+      clearTimeout(hideControlsTimer);
+      frame.classList.remove("controls-visible");
+    }
+  });
+  controls.addEventListener("keydown", revealControls);
+  controls.addEventListener("pointerdown", revealControls);
+  ["play", "pause", "ended", "emptied"].forEach((event) => video.addEventListener(event, updatePlay));
+  ["loadedmetadata", "durationchange", "timeupdate", "emptied"].forEach((event) => video.addEventListener(event, updateTime));
+  const requestSeek = () => {
+    resource.seekToPercent(Number(seek.value));
+    revealControls();
+    updateTime();
+  };
+  const endScrub = () => {
+    scrubbing = false;
+    frame.classList.remove("is-scrubbing");
+    revealControls();
+    updateTime();
+  };
+  seek.addEventListener("pointerdown", () => {
+    scrubbing = true;
+    frame.classList.add("is-scrubbing");
+    resource.activate();
+    revealControls();
+  });
+  seek.addEventListener("input", requestSeek);
+  seek.addEventListener("change", () => { requestSeek(); endScrub(); });
+  seek.addEventListener("pointerup", endScrub);
+  seek.addEventListener("pointercancel", endScrub);
+  seek.addEventListener("blur", endScrub);
+  if (audioEnabled) {
+    let previousVolume = 1;
+    volume.addEventListener("input", () => {
+      const level = Number(volume.value);
+      video.volume = level;
+      video.muted = level === 0;
+      if (level > 0) previousVolume = level;
+      updateVolume();
+    });
+    volumeButton.addEventListener("click", () => {
+      if (video.muted || video.volume === 0) {
+        video.volume = previousVolume || 1;
+        video.muted = false;
+      } else {
+        previousVolume = video.volume;
+        video.muted = true;
+      }
+      updateVolume();
+    });
+    video.addEventListener("volumechange", updateVolume);
+  }
+  speed.addEventListener("change", () => {
+    video.defaultPlaybackRate = Number(speed.value);
+    video.playbackRate = Number(speed.value);
+  });
+  video.addEventListener("ratechange", () => {
+    const rate = String(video.playbackRate);
+    if (![...speed.options].some((option) => option.value === rate)) {
+      speed.add(new Option(`${rate}×`, rate));
+    }
+    speed.value = rate;
+  });
+  fullscreen.hidden = !document.fullscreenEnabled && !video.webkitEnterFullscreen;
+  fullscreen.addEventListener("click", async () => {
+    try {
+      if (document.fullscreenElement === frame) await document.exitFullscreen();
+      else if (frame.requestFullscreen && document.fullscreenEnabled) await frame.requestFullscreen();
+      else if (video.webkitEnterFullscreen) video.webkitEnterFullscreen();
+    } catch { fullscreen.title = "Fullscreen unavailable"; }
+  });
+  document.addEventListener("fullscreenchange", () => {
+    fullscreen.title = document.fullscreenElement === frame ? "Exit fullscreen" : "Enter fullscreen";
+    fullscreen.setAttribute("aria-label", fullscreen.title);
+  });
+  frame.append(controls);
+  frame.classList.add("custom-video-player");
+  video.controls = false;
+  updateTime();
+  updatePlay();
+  updateVolume();
+}
+document.querySelectorAll("video").forEach(setupVideoPlayer);
+
+// Fixed type pills follow the active video; the media strip moves independently.
+document.querySelectorAll("[data-simulation-carousel]").forEach((group) => {
+  const track = group.querySelector(".simulation-track");
+  const slides = [...track.children];
+  const choices = [...group.querySelectorAll("[data-slide]")];
+  const previous = group.querySelector(".simulation-prev");
+  const next = group.querySelector(".simulation-next");
+  let active = 0, navigating = false, pendingFrame;
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  function highlight(index) {
+    active = Math.max(0, Math.min(slides.length - 1, index));
+    slides.forEach((slide, i) => slide.classList.toggle("is-active", i === active));
+    choices.forEach((button) => button.setAttribute("aria-pressed", String(Number(button.dataset.slide) === active)));
+    previous.disabled = active === 0;
+    next.disabled = active === slides.length - 1;
+  }
+  function goTo(index) {
+    highlight(index);
+    navigating = true;
+    const bounds = track.getBoundingClientRect();
+    const slide = slides[active].getBoundingClientRect();
+    track.scrollTo({ left: track.scrollLeft + slide.left - bounds.left - (bounds.width - slide.width) / 2,
+      behavior: reducedMotion.matches ? "instant" : "smooth" });
+  }
+  choices.forEach((button) => button.addEventListener("click", () => goTo(Number(button.dataset.slide))));
+  previous.addEventListener("click", () => goTo(active - 1));
+  next.addEventListener("click", () => goTo(active + 1));
+  track.addEventListener("keydown", (event) => {
+    if (event.target !== track) return;
+    const targets = { ArrowLeft: active - 1, ArrowRight: active + 1, Home: 0, End: slides.length - 1 };
+    if (!(event.key in targets)) return;
+    event.preventDefault();
+    goTo(targets[event.key]);
+  });
+  track.addEventListener("wheel", () => { navigating = false; }, { passive: true });
+  track.addEventListener("scroll", () => {
+    if (pendingFrame) return;
+    pendingFrame = requestAnimationFrame(() => {
+      pendingFrame = null;
+      const bounds = track.getBoundingClientRect();
+      if (!navigating) {
+        let nearest = 0, distance = Infinity;
+        slides.forEach((slide, i) => {
+          const rect = slide.getBoundingClientRect();
+          const delta = Math.abs(rect.left + rect.width / 2 - bounds.left - bounds.width / 2);
+          if (delta < distance) { nearest = i; distance = delta; }
+        });
+        highlight(nearest);
+      }
+      slides.forEach((slide) => {
+        const rect = slide.getBoundingClientRect();
+        if (rect.right <= bounds.left || rect.left >= bounds.right) {
+          slide.querySelectorAll("video").forEach((video) => videoResources.get(video)?.release());
+        }
+      });
+    });
+  }, { passive: true });
+  slides.forEach((slide, index) => slide.querySelector("video").addEventListener("play", () => highlight(index)));
+  track.addEventListener("focusin", (event) => {
+    const slide = event.target.closest(".simulation-slide");
+    if (slide) highlight(slides.indexOf(slide));
+  });
+  let drag, suppressClick = false;
+  track.addEventListener("pointerdown", (event) => {
+    navigating = false;
+    if (event.pointerType !== "mouse" || event.button !== 0 || event.target.closest(".video-controls")) return;
+    suppressClick = false;
+    drag = { id: event.pointerId, x: event.clientX, scroll: track.scrollLeft, moved: false };
+  });
+  track.addEventListener("pointermove", (event) => {
+    if (!drag || drag.id !== event.pointerId) return;
+    const delta = event.clientX - drag.x;
+    if (!drag.moved && Math.abs(delta) > 6) {
+      drag.moved = true;
+      track.setPointerCapture(event.pointerId);
+      track.classList.add("is-dragging");
+    }
+    if (drag.moved) { event.preventDefault(); track.scrollLeft = drag.scroll - delta; }
+  });
+  const endDrag = () => {
+    if (drag?.moved) suppressClick = true;
+    drag = null;
+    track.classList.remove("is-dragging");
+  };
+  track.addEventListener("pointerup", endDrag);
+  track.addEventListener("pointercancel", endDrag);
+  track.addEventListener("lostpointercapture", endDrag);
+  track.addEventListener("click", (event) => {
+    if (!suppressClick) return;
+    event.preventDefault(); event.stopPropagation(); suppressClick = false;
+  }, true);
+  highlight(0);
+});
+
+// Base / V.G. and repeated rollouts stay grouped by task.
+document.querySelectorAll("[data-variant-group]").forEach((group) => {
+  const tabs = [...group.querySelectorAll('[role="tab"]')];
+  if (!tabs.length) return;
+
+  const selectTab = (selectedTab, moveFocus = false) => {
+    const speedNote = group.querySelector('[data-task-speed]');
+    if (speedNote && selectedTab.dataset.displaySpeed) speedNote.textContent = selectedTab.dataset.displaySpeed;
+    tabs.forEach((tab) => {
+      const selected = tab === selectedTab;
+      const panel = document.getElementById(tab.getAttribute("aria-controls"));
+      tab.setAttribute("aria-selected", String(selected));
+      tab.tabIndex = selected ? 0 : -1;
+      panel.hidden = !selected;
+      if (!selected) panel.querySelectorAll("video").forEach((video) => videoResources.get(video)?.release());
+    });
+    if (moveFocus) selectedTab.focus();
+  };
+
+  tabs.forEach((tab, index) => {
+    tab.addEventListener("click", () => selectTab(tab));
+    tab.addEventListener("keydown", (event) => {
+      let nextIndex;
+      if (event.key === "ArrowRight") nextIndex = (index + 1) % tabs.length;
+      else if (event.key === "ArrowLeft") nextIndex = (index - 1 + tabs.length) % tabs.length;
+      else if (event.key === "Home") nextIndex = 0;
+      else if (event.key === "End") nextIndex = tabs.length - 1;
+      else return;
+      event.preventDefault();
+      selectTab(tabs[nextIndex], true);
+    });
+  });
+});
+
+// Add a path to any media frame's data-src in index.html to replace its placeholder.
+// Empty paths make no network requests. Original template media are never substituted.
+document.querySelectorAll("[data-media]").forEach((frame) => {
+  const source = frame.dataset.src.trim();
+  if (!source) return;
+
+  const isVideo = frame.dataset.media === "video";
+  const media = document.createElement(isVideo ? "video" : "img");
+  media.className = "loaded-media";
+  const label = frame.dataset.label || (isVideo ? "Research video" : "Research figure");
+
+  if (isVideo) {
+    media.controls = true;
+    media.muted = frame.dataset.audio !== "true";
+    media.loop = true;
+    media.playsInline = true;
+    media.preload = "metadata";
+    media.setAttribute("aria-label", label);
+    if (frame.dataset.poster) media.poster = frame.dataset.poster;
+  } else {
+    media.alt = label;
+    media.loading = "lazy";
+    media.decoding = "async";
+  }
+
+  media.addEventListener(isVideo ? "loadedmetadata" : "load", () => {
+    frame.classList.add("has-media");
+    if (isVideo) setupVideoPlayer(media);
+  }, { once: true });
+
+  media.addEventListener("error", () => {
+    frame.classList.remove("has-media");
+    if (isVideo) {
+      frame.querySelector(".video-controls")?.remove();
+      frame.classList.remove("custom-video-player");
+    }
+    media.remove();
+    const note = frame.querySelector(".placeholder-note");
+    if (note) note.textContent = isVideo ? "Video unavailable" : "Figure unavailable";
+  }, { once: true });
+
+  frame.append(media);
+  media.src = source;
+});
+
+// Enlarge framework figures with native keyboard focus and Escape support.
+const figureDialog = document.getElementById("figure-dialog");
+if (figureDialog) {
+  const expandedImage = figureDialog.querySelector("img");
+  document.querySelectorAll("[data-zoom-src]").forEach((button) => {
+    button.addEventListener("click", () => {
+      expandedImage.src = button.dataset.zoomSrc;
+      expandedImage.alt = button.querySelector("img")?.alt || "Expanded research figure";
+      figureDialog.showModal();
+    });
+  });
+  figureDialog.querySelector(".dialog-close").addEventListener("click", () => figureDialog.close());
+  figureDialog.addEventListener("click", (event) => {
+    const rect = figureDialog.getBoundingClientRect();
+    if (event.target === figureDialog && (
+      event.clientX < rect.left || event.clientX > rect.right ||
+      event.clientY < rect.top || event.clientY > rect.bottom
+    )) figureDialog.close();
+  });
+}
+
+const scrollButton = document.querySelector(".scroll-to-top");
+if (scrollButton) {
+  const updateScrollButton = () => { scrollButton.hidden = window.scrollY < 600; };
+  window.addEventListener("scroll", updateScrollButton, { passive: true });
+  updateScrollButton();
+  scrollButton.addEventListener("click", () => {
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: 0, behavior: reducedMotion ? "instant" : "smooth" });
+  });
+}
+
+// Highlight the current section without hiding content when JavaScript is unavailable.
+const navLinks = [...document.querySelectorAll(".nav-links a")];
+const sections = [...document.querySelectorAll("main > section[id]")];
+if ("IntersectionObserver" in window) {
+  const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      navLinks.forEach((link) => {
+        if (link.hash === `#${entry.target.id}`) link.setAttribute("aria-current", "location");
+        else link.removeAttribute("aria-current");
+      });
+    });
+  }, { rootMargin: "-15% 0px -55% 0px", threshold: 0 });
+  sections.forEach((section) => sectionObserver.observe(section));
+}

@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DexSimWAM: Scaling Dexterous World Action Models with Verified Simulation Data</title>
+  <meta name="description" content="DexSimWAM scales dexterous World Action Models with verified simulation data, large-scale pre-training, and task-specific post-training.">
+  <meta name="author" content="Anonymous authors">
+  <meta name="theme-color" content="#ffffff">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="DexSimWAM: Scaling Dexterous World Action Models with Verified Simulation Data">
+  <meta property="og:description" content="DexSimWAM scales dexterous World Action Models with verified simulation data, large-scale pre-training, and task-specific post-training.">
+  <meta name="citation_title" content="DexSimWAM: Scaling Dexterous World Action Models with Verified Simulation Data">
+  <meta name="citation_author" content="Anonymous authors">
+  <link rel="icon" href="static/images/agentic-wam-icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="static/css/index.css?v=times-body-copy">
+  <script src="static/js/index.js?v=multi-play-1105" defer></script>
+  <link rel="stylesheet" href="static/components/drawer-rsi/figure.css">
+  <link rel="stylesheet" href="static/components/drawer-rsi/story.css">
+  <link rel="stylesheet" href="static/components/drawer-rsi/homepage.css">
+  <script src="static/components/drawer-rsi/vendor/d3.min.js" defer></script>
+  <script src="static/components/drawer-rsi/js/drawer-rsi-data.js" defer></script>
+  <script src="static/components/drawer-rsi/js/scroll-story.js" defer></script>
+  <script src="static/components/drawer-rsi/js/drawer-rsi-figure.js" defer></script>
+  <script src="static/components/drawer-rsi/js/drawer-rsi-trajectory-overlay.js" defer></script>
+  <script src="static/components/drawer-rsi/js/viewer-detail.js" defer></script>
+</head>
+<body>
+  <!-- Local icons keep the page independent of font and icon CDNs. -->
+  <svg class="svg-symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="icon-mark" viewBox="0 0 24 24"><path d="m3 17 5-10 4 7 4-7 5 10M6 17h12"/></symbol>
+    <symbol id="icon-play" viewBox="0 0 24 24"><path d="m9 5 11 7-11 7Z"/></symbol>
+    <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
+    <symbol id="icon-expand" viewBox="0 0 24 24"><path d="M14 4h6v6m0-6-7 7M10 20H4v-6m0 6 7-7"/></symbol>
+    <symbol id="icon-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="icon-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="m3 17 5-5 4 4 4-6 5 7"/><circle cx="8" cy="8" r="1"/></symbol>
+    <symbol id="icon-up" viewBox="0 0 24 24"><path d="M12 19V5m-6 6 6-6 6 6"/></symbol>
+  </svg>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <header class="site-header">
+    <nav class="site-nav page-width" aria-label="Main navigation">
+      <a class="nav-brand" href="#top"><span class="brand-icon"><svg class="icon"><use href="#icon-mark"/></svg></span>DexSimWAM</a>
+      <div class="nav-links"><a href="#framework">Overview</a><a href="#skills">Result</a><a href="#results">Agent guided training</a></div>
+      <span class="nav-spacer" aria-hidden="true"></span>
+    </nav>
+  </header>
+  <main id="main-content">
+    <section class="publication-header page-width" id="top" aria-labelledby="paper-title">
+      <h1 id="paper-title" aria-label="DexSimWAM: Scaling Dexterous World Action Models with Verified Simulation Data"><span class="project-name">DexSimWAM</span> <span class="paper-title">Scaling Dexterous World Action Models<br class="desktop-break"> with Verified Simulation Data</span></h1>
+      <p class="publication-authors">Anonymous authors</p>
+    </section>
+    <section class="teaser-section page-width" id="teaser" aria-label="Overview video">
+      <figure>
+        <div class="media-frame teaser-frame has-media" data-audio="true">
+          <video class="loaded-media" controls loop playsinline preload="none" poster="static/images/posters/dexsimwam-overview.jpg?v=supplementary-15157" aria-label="DexSimWAM overview video">
+            <source src="static/videos/dexsimwam-overview.mp4?v=supplementary-15157" type="video/mp4">
+            Your browser does not support this video. <a href="static/videos/dexsimwam-overview.mp4?v=supplementary-15157">Open the video</a>.
+          </video>
+        </div>
+      </figure>
+    </section>
+    <section class="abstract-section section-tint" id="abstract" aria-labelledby="abstract-title">
+      <div class="page-width abstract-layout">
+        <div><h2 id="abstract-title">Abstract</h2></div>
+        <div class="abstract-content">
+            <p>Learning transferable dexterous manipulation policies is constrained by the scarcity of large-scale robot data. Simulation offers scale, but synthesizing dexterous trajectories is substantially harder than for grippers: the data must cover diverse multi-finger contacts and hand-object configurations while satisfying language-specified grasp and motion semantics. We introduce DexSimWAM, which combines an agent-guided, retrieval-based synthetic-data pipeline with large-scale World Action Model (WAM) pre-training and task-specific post-training. Given a language-specified task and verifier feedback, the agent guides scene sampling, grasp retrieval, optimization-based path planning, and bounded expansion of a physically validated object-frame grasp bank. Deterministic filters and fixed whole-task verification yield a 16k-hour corpus spanning diverse objects, scenes, grasp styles, and unilateral and bimanual behaviors. On this corpus, DexSimWAM jointly pre-trains visual-dynamics prediction and synchronized arm-hand action generation. Task-specific post-training then adapts the shared WAM with scalable simulation data and targeted real-robot trajectories, supporting 6D object reorientation, functional pouring, articulated-object interaction, long-horizon semantic rearrangement, direct sim-to-real deployment, and physical-domain refinement.</p>
+        </div>
+      </div>
+    </section>
+    <section class="content-section page-width" id="framework" aria-labelledby="framework-title">
+      <div class="section-heading framework-heading"><h2 id="framework-title">DexSimWAM at a Glance</h2></div>
+      <figure class="framework-figure">
+        <!-- Framework figure rendered from dexsimwam_pipeline.pdf. -->
+        <button class="figure-button" type="button" data-zoom-src="static/images/dexsimwam-pipeline.png" aria-label="Enlarge the DexSimWAM framework diagram">
+          <img src="static/images/dexsimwam-pipeline.png" width="3200" height="1477" alt="DexSimWAM pipeline: grasp synthesis, task planning, physical verification, and domain randomization generate simulation data for WAM pre-training, followed by post-training with real-robot data for dexterous manipulation." loading="lazy">
+        </button>
+      </figure>
+      <div class="section-heading pipeline-heading"><h2 id="trajectory-pipeline-title">Agent-guided task-conditioned trajectory production pipeline</h2></div>
+      <figure class="framework-figure pipeline-figure" aria-labelledby="trajectory-pipeline-title">
+        <!-- Data-generation figure rendered from the first page of data-generation-pipeline.pdf. -->
+        <button class="figure-button" type="button" data-zoom-src="static/images/data-generation-pipeline-preview.png?v=slide1-clear" aria-label="Enlarge the DexSimWAM data generation pipeline">
+          <img src="static/images/data-generation-pipeline-preview.png?v=slide1-clear" width="3989" height="1459" alt="Agent-guided data generation pipeline with an object-frame grasp bank, taxonomy templates, task and scene inputs, task planning, physical verification, and rendering." loading="lazy">
+        </button>
+      </figure>
+    </section>
+<section class="content-section page-width" id="sim-to-real" aria-labelledby="transfer-title">
+      <div class="section-heading"><h2 id="transfer-title">Dexterous Manipulation in the Real World</h2></div>
+      <div class="real-task-grid">
+        <div class="media-grid two-columns real-task-row">
+          <article class="task-demo" data-variant-group aria-labelledby="real-pnpmulti-title">
+            <div class="task-demo-heading"><div class="task-demo-title"><h3 id="real-pnpmulti-title">Sequential <span class="task-name-part">Multi-Object</span> <span class="task-name-part">Pick-and-Place</span></h3><span class="media-annotation" data-task-speed>2× speed</span></div><span class="environment-tag real">REAL</span></div>
+            <div class="media-variant-tabs" role="tablist" aria-label="Sequential Multi-Object Pick-and-Place demonstrations">
+              <button type="button" id="real-pnpmulti-pg-tab" role="tab" aria-selected="true" aria-controls="real-pnpmulti-pg-panel" tabindex="0" data-display-speed="2× speed">P.G.</button>
+              <button type="button" id="real-pnpmulti-og-tab" role="tab" aria-selected="false" aria-controls="real-pnpmulti-og-panel" tabindex="-1" data-display-speed="2× speed">O.G.</button>
+              <button type="button" id="real-pnpmulti-sim2real-tab" role="tab" aria-selected="false" aria-controls="real-pnpmulti-sim2real-panel" tabindex="-1" data-display-speed="1× speed">Sim2Real</button>
+            </div>
+            <div class="media-variant-panel" id="real-pnpmulti-pg-panel" role="tabpanel" aria-labelledby="real-pnpmulti-pg-tab">
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/1101/pnpmulti-pg.jpg" aria-label="Sequential Multi-Object Pick-and-Place — P.G. — real-world demonstration">
+                  <source src="static/videos/real/1101-web/pnpmulti/pg.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/pnpmulti/pg.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-pnpmulti-og-panel" role="tabpanel" aria-labelledby="real-pnpmulti-og-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/1101/pnpmulti-og.jpg" aria-label="Sequential Multi-Object Pick-and-Place — O.G. — real-world demonstration">
+                  <source src="static/videos/real/1101-web/pnpmulti/og.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/pnpmulti/og.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-pnpmulti-sim2real-panel" role="tabpanel" aria-labelledby="real-pnpmulti-sim2real-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim2real-pnp.jpg" aria-label="Sequential Multi-Object Pick-and-Place — Sim2Real — real-world demonstration">
+                  <source src="static/videos/real/sim2real-pnp.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/sim2real-pnp.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+          </article>
+          <article class="task-demo" data-variant-group aria-labelledby="real-pnp6d-title">
+            <div class="task-demo-heading"><div class="task-demo-title"><h3 id="real-pnp6d-title">6D-Pose Transfer</h3></div><span class="environment-tag real">REAL</span></div>
+            <div class="media-variant-tabs" role="tablist" aria-label="6D-Pose Transfer demonstrations">
+              <button type="button" id="real-pnp6d-base-tab" role="tab" aria-selected="true" aria-controls="real-pnp6d-base-panel" tabindex="0">Base</button>
+              <button type="button" id="real-pnp6d-pg1-tab" role="tab" aria-selected="false" aria-controls="real-pnp6d-pg1-panel" tabindex="-1">P.G. 1</button>
+              <button type="button" id="real-pnp6d-pg2-tab" role="tab" aria-selected="false" aria-controls="real-pnp6d-pg2-panel" tabindex="-1">P.G. 2</button>
+              <button type="button" id="real-pnp6d-vg-tab" role="tab" aria-selected="false" aria-controls="real-pnp6d-vg-panel" tabindex="-1">V.G.</button>
+              <button type="button" id="real-pnp6d-og1-tab" role="tab" aria-selected="false" aria-controls="real-pnp6d-og1-panel" tabindex="-1">O.G. 1</button>
+              <button type="button" id="real-pnp6d-og2-tab" role="tab" aria-selected="false" aria-controls="real-pnp6d-og2-panel" tabindex="-1">O.G. 2</button>
+            </div>
+            <div class="media-variant-panel" id="real-pnp6d-base-panel" role="tabpanel" aria-labelledby="real-pnp6d-base-tab">
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/1101/pnp6d-base.jpg" aria-label="6D-Pose Transfer — Base — real-world demonstration">
+                  <source src="static/videos/real/1101-web/pnp6d/base.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/pnp6d/base.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-pnp6d-pg1-panel" role="tabpanel" aria-labelledby="real-pnp6d-pg1-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/1101/pnp6d-pg1.jpg" aria-label="6D-Pose Transfer — P.G. 1 — real-world demonstration">
+                  <source src="static/videos/real/1101-web/pnp6d/pg1.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/pnp6d/pg1.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-pnp6d-pg2-panel" role="tabpanel" aria-labelledby="real-pnp6d-pg2-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/1101/pnp6d-pg2.jpg" aria-label="6D-Pose Transfer — P.G. 2 — real-world demonstration">
+                  <source src="static/videos/real/1101-web/pnp6d/pg2.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/pnp6d/pg2.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-pnp6d-vg-panel" role="tabpanel" aria-labelledby="real-pnp6d-vg-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/1101/pnp6d-vg.jpg" aria-label="6D-Pose Transfer — V.G. — real-world demonstration">
+                  <source src="static/videos/real/1101-web/pnp6d/vg.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/pnp6d/vg.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-pnp6d-og1-panel" role="tabpanel" aria-labelledby="real-pnp6d-og1-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/1101/pnp6d-og1.jpg" aria-label="6D-Pose Transfer — O.G. 1 — real-world demonstration">
+                  <source src="static/videos/real/1101-web/pnp6d/og1.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/pnp6d/og1.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-pnp6d-og2-panel" role="tabpanel" aria-labelledby="real-pnp6d-og2-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/1101/pnp6d-og2.jpg" aria-label="6D-Pose Transfer — O.G. 2 — real-world demonstration">
+                  <source src="static/videos/real/1101-web/pnp6d/og2.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/pnp6d/og2.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+          </article>
+        </div>
+        <div class="media-grid three-columns real-task-row">
+          <article class="task-demo" data-variant-group aria-labelledby="real-teapot-title">
+            <div class="task-demo-heading"><div class="task-demo-title"><h3 id="real-teapot-title">Teapot Pouring</h3></div><span class="environment-tag real">REAL</span></div>
+            <div class="media-variant-tabs" role="tablist" aria-label="Teapot Pouring demonstrations">
+              <button type="button" id="real-teapot-base-tab" role="tab" aria-selected="true" aria-controls="real-teapot-base-panel" tabindex="0">Base</button>
+              <button type="button" id="real-teapot-pg1-tab" role="tab" aria-selected="false" aria-controls="real-teapot-pg1-panel" tabindex="-1">P.G. 1</button>
+              <button type="button" id="real-teapot-pg2-tab" role="tab" aria-selected="false" aria-controls="real-teapot-pg2-panel" tabindex="-1">P.G. 2</button>
+              <button type="button" id="real-teapot-vg-tab" role="tab" aria-selected="false" aria-controls="real-teapot-vg-panel" tabindex="-1">V.G.</button>
+              <button type="button" id="real-teapot-og-tab" role="tab" aria-selected="false" aria-controls="real-teapot-og-panel" tabindex="-1">O.G.</button>
+            </div>
+            <div class="media-variant-panel" id="real-teapot-base-panel" role="tabpanel" aria-labelledby="real-teapot-base-tab">
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/1101/teapot-base.jpg" aria-label="Teapot Pouring — Base — real-world demonstration">
+                  <source src="static/videos/real/1101-web/teapot/base.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/teapot/base.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-teapot-pg1-panel" role="tabpanel" aria-labelledby="real-teapot-pg1-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/1101/teapot-pg1.jpg" aria-label="Teapot Pouring — P.G. 1 — real-world demonstration">
+                  <source src="static/videos/real/1101-web/teapot/pg1.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/teapot/pg1.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-teapot-pg2-panel" role="tabpanel" aria-labelledby="real-teapot-pg2-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/1101/teapot-pg2.jpg" aria-label="Teapot Pouring — P.G. 2 — real-world demonstration">
+                  <source src="static/videos/real/1101-web/teapot/pg2.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/teapot/pg2.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-teapot-vg-panel" role="tabpanel" aria-labelledby="real-teapot-vg-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/1101/teapot-vg.jpg" aria-label="Teapot Pouring — V.G. — real-world demonstration">
+                  <source src="static/videos/real/1101-web/teapot/vg.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/teapot/vg.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-teapot-og-panel" role="tabpanel" aria-labelledby="real-teapot-og-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/1101/teapot-og.jpg" aria-label="Teapot Pouring — O.G. — real-world demonstration">
+                  <source src="static/videos/real/1101-web/teapot/og.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/teapot/og.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+          </article>
+          <article class="task-demo" data-variant-group aria-labelledby="real-drawer-title">
+            <div class="task-demo-heading"><div class="task-demo-title"><h3 id="real-drawer-title">Drawer Storage</h3><span class="media-annotation">Training-time RTC</span></div><span class="environment-tag real">REAL</span></div>
+            <div class="media-variant-tabs" role="tablist" aria-label="Drawer Storage demonstrations">
+              <button type="button" id="real-drawer-base-tab" role="tab" aria-selected="true" aria-controls="real-drawer-base-panel" tabindex="0">Base</button>
+              <button type="button" id="real-drawer-pg1-tab" role="tab" aria-selected="false" aria-controls="real-drawer-pg1-panel" tabindex="-1">P.G. 1</button>
+              <button type="button" id="real-drawer-pg2-tab" role="tab" aria-selected="false" aria-controls="real-drawer-pg2-panel" tabindex="-1">P.G. 2</button>
+              <button type="button" id="real-drawer-vg-tab" role="tab" aria-selected="false" aria-controls="real-drawer-vg-panel" tabindex="-1">V.G.</button>
+              <button type="button" id="real-drawer-og-tab" role="tab" aria-selected="false" aria-controls="real-drawer-og-panel" tabindex="-1">O.G.</button>
+            </div>
+            <div class="media-variant-panel" id="real-drawer-base-panel" role="tabpanel" aria-labelledby="real-drawer-base-tab">
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/1101/drawer-base.jpg" aria-label="Drawer Storage — Base — real-world demonstration">
+                  <source src="static/videos/real/1101/drawer/base.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101/drawer/base.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-drawer-pg1-panel" role="tabpanel" aria-labelledby="real-drawer-pg1-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/1101/drawer-pg1.jpg" aria-label="Drawer Storage — P.G. 1 — real-world demonstration">
+                  <source src="static/videos/real/1101/drawer/pg1.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101/drawer/pg1.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-drawer-pg2-panel" role="tabpanel" aria-labelledby="real-drawer-pg2-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/1101/drawer-pg2.jpg" aria-label="Drawer Storage — P.G. 2 — real-world demonstration">
+                  <source src="static/videos/real/1101/drawer/pg2.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101/drawer/pg2.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-drawer-vg-panel" role="tabpanel" aria-labelledby="real-drawer-vg-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/1101/drawer-vg.jpg" aria-label="Drawer Storage — V.G. — real-world demonstration">
+                  <source src="static/videos/real/1101/drawer/vg.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101/drawer/vg.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-drawer-og-panel" role="tabpanel" aria-labelledby="real-drawer-og-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/1101/drawer-og.jpg" aria-label="Drawer Storage — O.G. — real-world demonstration">
+                  <source src="static/videos/real/1101/drawer/og.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101/drawer/og.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+          </article>
+          <article class="task-demo" data-variant-group aria-labelledby="real-trash-bin-title">
+            <div class="task-demo-heading"><div class="task-demo-title"><h3 id="real-trash-bin-title">Tabletop Waste Clearing</h3></div><span class="environment-tag real">REAL</span></div>
+            <div class="media-variant-tabs" role="tablist" aria-label="Tabletop Waste Clearing demonstrations">
+              <button type="button" id="real-trash-bin-base-tab" role="tab" aria-selected="true" aria-controls="real-trash-bin-base-panel" tabindex="0">Base</button>
+              <button type="button" id="real-trash-bin-pg-tab" role="tab" aria-selected="false" aria-controls="real-trash-bin-pg-panel" tabindex="-1">P.G.</button>
+              <button type="button" id="real-trash-bin-vg-tab" role="tab" aria-selected="false" aria-controls="real-trash-bin-vg-panel" tabindex="-1">V.G.</button>
+              <button type="button" id="real-trash-bin-numg1-tab" role="tab" aria-selected="false" aria-controls="real-trash-bin-numg1-panel" tabindex="-1">N.G. 1</button>
+              <button type="button" id="real-trash-bin-numg2-tab" role="tab" aria-selected="false" aria-controls="real-trash-bin-numg2-panel" tabindex="-1">N.G. 2</button>
+            </div>
+            <div class="media-variant-panel" id="real-trash-bin-base-panel" role="tabpanel" aria-labelledby="real-trash-bin-base-tab">
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/1101/trash-bin-base.jpg" aria-label="Tabletop Waste Clearing — Base — real-world demonstration">
+                  <source src="static/videos/real/1101-web/trash-bin/base.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/trash-bin/base.mp4">Open the video</a>.
+                </video>
+              </div>
+              <p class="number-generalization-note is-placeholder" aria-hidden="true">Generalization to different numbers of waste objects.</p>
+            </div>
+            <div class="media-variant-panel" id="real-trash-bin-pg-panel" role="tabpanel" aria-labelledby="real-trash-bin-pg-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/1101/trash-bin-pg.jpg" aria-label="Tabletop Waste Clearing — P.G. — real-world demonstration">
+                  <source src="static/videos/real/1101-web/trash-bin/pg.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/trash-bin/pg.mp4">Open the video</a>.
+                </video>
+              </div>
+              <p class="number-generalization-note is-placeholder" aria-hidden="true">Generalization to different numbers of waste objects.</p>
+            </div>
+            <div class="media-variant-panel" id="real-trash-bin-vg-panel" role="tabpanel" aria-labelledby="real-trash-bin-vg-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/1101/trash-bin-vg.jpg" aria-label="Tabletop Waste Clearing — V.G. — real-world demonstration">
+                  <source src="static/videos/real/1101-web/trash-bin/vg.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/trash-bin/vg.mp4">Open the video</a>.
+                </video>
+              </div>
+              <p class="number-generalization-note is-placeholder" aria-hidden="true">Generalization to different numbers of waste objects.</p>
+            </div>
+            <div class="media-variant-panel" id="real-trash-bin-numg1-panel" role="tabpanel" aria-labelledby="real-trash-bin-numg1-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/1101/trash-bin-numg1.jpg" aria-label="Tabletop Waste Clearing — N.G. 1 — real-world demonstration">
+                  <source src="static/videos/real/1101-web/trash-bin/numg1.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/trash-bin/numg1.mp4">Open the video</a>.
+                </video>
+              </div>
+              <p class="number-generalization-note">Generalization to different numbers of waste objects.</p>
+            </div>
+            <div class="media-variant-panel" id="real-trash-bin-numg2-panel" role="tabpanel" aria-labelledby="real-trash-bin-numg2-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/1101/trash-bin-numg2.jpg" aria-label="Tabletop Waste Clearing — N.G. 2 — real-world demonstration">
+                  <source src="static/videos/real/1101-web/trash-bin/numg2.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/trash-bin/numg2.mp4">Open the video</a>.
+                </video>
+              </div>
+              <p class="number-generalization-note">Generalization to different numbers of waste objects.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+    <section class="content-section section-tint" id="drawer-rtc" aria-labelledby="drawer-rtc-title">
+      <div class="page-width">
+        <div class="section-heading"><h2 id="drawer-rtc-title">Drawer Manipulation with and without RTC</h2></div>
+        <div class="media-grid two-columns comparison-grid">
+          <figure class="media-card" id="real-drawer-non-rtc-panel">
+            <h3 class="comparison-label">Non-RTC</h3>
+                <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/real-drawer.jpg" aria-label="Drawer Storage — Non-RTC — real-world demonstration">
+                  <source src="static/videos/real/drawer.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/drawer.mp4">Open the video</a>.
+                </video>
+              </div>
+                <figcaption>Drawer manipulation without RTC.</figcaption>
+              </figure>
+          <figure class="media-card" id="real-drawer-training-time-rtc-panel">
+            <h3 class="comparison-label">Training-Time RTC</h3>
+                <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/real-drawer-training-time-rtc.jpg" aria-label="Drawer Storage — Training-Time RTC — real-world demonstration">
+                  <source src="static/videos/real/drawer-training-time-rtc.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/drawer-training-time-rtc.mp4">Open the video</a>.
+                </video>
+              </div>
+                <figcaption>Drawer manipulation with training-time RTC.</figcaption>
+              </figure>
+        </div>
+      </div>
+    </section>
+    <section class="content-section section-tint" id="skills" aria-labelledby="skills-title">
+      <div class="page-width">
+        <div class="section-heading"><h2 id="skills-title">Dexterous Skills in Simulation</h2></div>
+        <div class="simulation-tasks">
+        <article class="simulation-task" data-simulation-carousel style="--simulation-aspect: 800 / 600" aria-labelledby="sim-pnp-title" aria-roledescription="carousel">
+          <div class="simulation-task-heading"><h3 id="sim-pnp-title">Single-Object Pick-and-Place</h3><span class="simulation-speed">1× speed</span></div>
+          <div class="simulation-types" role="group" aria-label="Single-Object Pick-and-Place video types"><button class="simulation-pill" type="button" data-slide="0" aria-pressed="true" aria-controls="sim-pnp-base1">Base 1</button><button class="simulation-pill" type="button" data-slide="1" aria-pressed="false" aria-controls="sim-pnp-base2">Base 2</button><button class="simulation-pill" type="button" data-slide="2" aria-pressed="false" aria-controls="sim-pnp-pg1">P.G. 1</button><button class="simulation-pill" type="button" data-slide="3" aria-pressed="false" aria-controls="sim-pnp-pg2">P.G. 2</button><button class="simulation-pill" type="button" data-slide="4" aria-pressed="false" aria-controls="sim-pnp-vg1">V.G.</button><button class="simulation-pill" type="button" data-slide="5" aria-pressed="false" aria-controls="sim-pnp-og1">O.G. 1</button><button class="simulation-pill" type="button" data-slide="6" aria-pressed="false" aria-controls="sim-pnp-og2">O.G. 2</button></div>
+          <div class="simulation-carousel">
+            <button class="simulation-arrow simulation-prev" type="button" aria-label="Previous Single-Object Pick-and-Place video"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button>
+            <div class="simulation-track" tabindex="0" role="group" aria-label="Single-Object Pick-and-Place videos"><div class="simulation-slide is-active" id="sim-pnp-base1" data-kind="base" role="group" aria-label="Base 1 · 1 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/pnp-base1.jpg" aria-label="Single-Object Pick-and-Place — Base 1 — simulation demonstration"><source src="static/videos/sim/1102/pnp-base1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/pnp-base1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-pnp-base2" data-kind="base" role="group" aria-label="Base 2 · 2 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/pnp-base2.jpg" aria-label="Single-Object Pick-and-Place — Base 2 — simulation demonstration"><source src="static/videos/sim/1102/pnp-base2.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/pnp-base2.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-pnp-pg1" data-kind="pg" role="group" aria-label="P.G. 1 · 3 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/pnp-pg1.jpg" aria-label="Single-Object Pick-and-Place — P.G. 1 — simulation demonstration"><source src="static/videos/sim/1102/pnp-pg1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/pnp-pg1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-pnp-pg2" data-kind="pg" role="group" aria-label="P.G. 2 · 4 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/pnp-pg2.jpg" aria-label="Single-Object Pick-and-Place — P.G. 2 — simulation demonstration"><source src="static/videos/sim/1102/pnp-pg2.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/pnp-pg2.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-pnp-vg1" data-kind="vg" role="group" aria-label="V.G. · 5 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/pnp-vg1.jpg" aria-label="Single-Object Pick-and-Place — V.G. — simulation demonstration"><source src="static/videos/sim/1102/pnp-vg1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/pnp-vg1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-pnp-og1" data-kind="og" role="group" aria-label="O.G. 1 · 6 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/pnp-og1.jpg" aria-label="Single-Object Pick-and-Place — O.G. 1 — simulation demonstration"><source src="static/videos/sim/1102/pnp-og1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/pnp-og1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-pnp-og2" data-kind="og" role="group" aria-label="O.G. 2 · 7 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/pnp-og2.jpg" aria-label="Single-Object Pick-and-Place — O.G. 2 — simulation demonstration"><source src="static/videos/sim/1102/pnp-og2.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/pnp-og2.mp4">Open the video</a>.</video></div>
+            </div></div>
+            <button class="simulation-arrow simulation-next" type="button" aria-label="Next Single-Object Pick-and-Place video"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6 6 6-6 6"/></svg></button>
+          </div>
+          <div class="simulation-dots" role="group" aria-label="Single-Object Pick-and-Place video position"><button type="button" class="simulation-dot" data-slide="0" aria-label="Show Base 1" aria-pressed="true" aria-controls="sim-pnp-base1"></button><button type="button" class="simulation-dot" data-slide="1" aria-label="Show Base 2" aria-pressed="false" aria-controls="sim-pnp-base2"></button><button type="button" class="simulation-dot" data-slide="2" aria-label="Show P.G. 1" aria-pressed="false" aria-controls="sim-pnp-pg1"></button><button type="button" class="simulation-dot" data-slide="3" aria-label="Show P.G. 2" aria-pressed="false" aria-controls="sim-pnp-pg2"></button><button type="button" class="simulation-dot" data-slide="4" aria-label="Show V.G." aria-pressed="false" aria-controls="sim-pnp-vg1"></button><button type="button" class="simulation-dot" data-slide="5" aria-label="Show O.G. 1" aria-pressed="false" aria-controls="sim-pnp-og1"></button><button type="button" class="simulation-dot" data-slide="6" aria-label="Show O.G. 2" aria-pressed="false" aria-controls="sim-pnp-og2"></button></div>
+        </article>
+        <article class="simulation-task" data-simulation-carousel style="--simulation-aspect: 800 / 800" aria-labelledby="sim-pnp6d-title" aria-roledescription="carousel">
+          <div class="simulation-task-heading"><h3 id="sim-pnp6d-title">6D-Pose Transfer</h3><span class="simulation-speed">3× speed</span></div>
+          <div class="simulation-types" role="group" aria-label="6D-Pose Transfer video types"><button class="simulation-pill" type="button" data-slide="0" aria-pressed="true" aria-controls="sim-pnp6d-base1">Base</button><button class="simulation-pill" type="button" data-slide="1" aria-pressed="false" aria-controls="sim-pnp6d-pg1">P.G. 1</button><button class="simulation-pill" type="button" data-slide="2" aria-pressed="false" aria-controls="sim-pnp6d-pg2">P.G. 2</button><button class="simulation-pill" type="button" data-slide="3" aria-pressed="false" aria-controls="sim-pnp6d-pg3">P.G. 3</button><button class="simulation-pill" type="button" data-slide="4" aria-pressed="false" aria-controls="sim-pnp6d-vg1">V.G.</button><button class="simulation-pill" type="button" data-slide="5" aria-pressed="false" aria-controls="sim-pnp6d-og1">O.G. 1</button><button class="simulation-pill" type="button" data-slide="6" aria-pressed="false" aria-controls="sim-pnp6d-og2">O.G. 2</button></div>
+          <div class="simulation-carousel">
+            <button class="simulation-arrow simulation-prev" type="button" aria-label="Previous 6D-Pose Transfer video"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button>
+            <div class="simulation-track" tabindex="0" role="group" aria-label="6D-Pose Transfer videos"><div class="simulation-slide is-active" id="sim-pnp6d-base1" data-kind="base" role="group" aria-label="Base · 1 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/pnp6d-base1.jpg" aria-label="6D-Pose Transfer — Base — simulation demonstration"><source src="static/videos/sim/1102/pnp6d-base1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/pnp6d-base1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-pnp6d-pg1" data-kind="pg" role="group" aria-label="P.G. 1 · 2 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/pnp6d-pg1.jpg" aria-label="6D-Pose Transfer — P.G. 1 — simulation demonstration"><source src="static/videos/sim/1102/pnp6d-pg1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/pnp6d-pg1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-pnp6d-pg2" data-kind="pg" role="group" aria-label="P.G. 2 · 3 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/pnp6d-pg2.jpg" aria-label="6D-Pose Transfer — P.G. 2 — simulation demonstration"><source src="static/videos/sim/1102/pnp6d-pg2.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/pnp6d-pg2.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-pnp6d-pg3" data-kind="pg" role="group" aria-label="P.G. 3 · 4 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/pnp6d-pg3.jpg" aria-label="6D-Pose Transfer — P.G. 3 — simulation demonstration"><source src="static/videos/sim/1102/pnp6d-pg3.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/pnp6d-pg3.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-pnp6d-vg1" data-kind="vg" role="group" aria-label="V.G. · 5 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/pnp6d-vg1.jpg" aria-label="6D-Pose Transfer — V.G. — simulation demonstration"><source src="static/videos/sim/1102/pnp6d-vg1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/pnp6d-vg1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-pnp6d-og1" data-kind="og" role="group" aria-label="O.G. 1 · 6 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/pnp6d-og1.jpg" aria-label="6D-Pose Transfer — O.G. 1 — simulation demonstration"><source src="static/videos/sim/1102/pnp6d-og1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/pnp6d-og1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-pnp6d-og2" data-kind="og" role="group" aria-label="O.G. 2 · 7 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/pnp6d-og2.jpg" aria-label="6D-Pose Transfer — O.G. 2 — simulation demonstration"><source src="static/videos/sim/1102/pnp6d-og2.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/pnp6d-og2.mp4">Open the video</a>.</video></div>
+            </div></div>
+            <button class="simulation-arrow simulation-next" type="button" aria-label="Next 6D-Pose Transfer video"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6 6 6-6 6"/></svg></button>
+          </div>
+          <div class="simulation-dots" role="group" aria-label="6D-Pose Transfer video position"><button type="button" class="simulation-dot" data-slide="0" aria-label="Show Base" aria-pressed="true" aria-controls="sim-pnp6d-base1"></button><button type="button" class="simulation-dot" data-slide="1" aria-label="Show P.G. 1" aria-pressed="false" aria-controls="sim-pnp6d-pg1"></button><button type="button" class="simulation-dot" data-slide="2" aria-label="Show P.G. 2" aria-pressed="false" aria-controls="sim-pnp6d-pg2"></button><button type="button" class="simulation-dot" data-slide="3" aria-label="Show P.G. 3" aria-pressed="false" aria-controls="sim-pnp6d-pg3"></button><button type="button" class="simulation-dot" data-slide="4" aria-label="Show V.G." aria-pressed="false" aria-controls="sim-pnp6d-vg1"></button><button type="button" class="simulation-dot" data-slide="5" aria-label="Show O.G. 1" aria-pressed="false" aria-controls="sim-pnp6d-og1"></button><button type="button" class="simulation-dot" data-slide="6" aria-label="Show O.G. 2" aria-pressed="false" aria-controls="sim-pnp6d-og2"></button></div>
+        </article>
+        <article class="simulation-task" data-simulation-carousel style="--simulation-aspect: 800 / 600" aria-labelledby="sim-teapot-title" aria-roledescription="carousel">
+          <div class="simulation-task-heading"><h3 id="sim-teapot-title">Teapot Pouring</h3><span class="simulation-speed">3× speed</span></div>
+          <div class="simulation-types" role="group" aria-label="Teapot Pouring video types"><button class="simulation-pill" type="button" data-slide="0" aria-pressed="true" aria-controls="sim-teapot-base1">Base</button><button class="simulation-pill" type="button" data-slide="1" aria-pressed="false" aria-controls="sim-teapot-pg1">P.G. 1</button><button class="simulation-pill" type="button" data-slide="2" aria-pressed="false" aria-controls="sim-teapot-pg2">P.G. 2</button><button class="simulation-pill" type="button" data-slide="3" aria-pressed="false" aria-controls="sim-teapot-vg1">V.G.</button><button class="simulation-pill" type="button" data-slide="4" aria-pressed="false" aria-controls="sim-teapot-og1">O.G. 1</button><button class="simulation-pill" type="button" data-slide="5" aria-pressed="false" aria-controls="sim-teapot-og2">O.G. 2</button></div>
+          <div class="simulation-carousel">
+            <button class="simulation-arrow simulation-prev" type="button" aria-label="Previous Teapot Pouring video"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button>
+            <div class="simulation-track" tabindex="0" role="group" aria-label="Teapot Pouring videos"><div class="simulation-slide is-active" id="sim-teapot-base1" data-kind="base" role="group" aria-label="Base · 1 of 6">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/teapot-base1.jpg" aria-label="Teapot Pouring — Base — simulation demonstration"><source src="static/videos/sim/1102/teapot-base1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/teapot-base1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-teapot-pg1" data-kind="pg" role="group" aria-label="P.G. 1 · 2 of 6">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/teapot-pg1.jpg" aria-label="Teapot Pouring — P.G. 1 — simulation demonstration"><source src="static/videos/sim/1102/teapot-pg1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/teapot-pg1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-teapot-pg2" data-kind="pg" role="group" aria-label="P.G. 2 · 3 of 6">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/teapot-pg2.jpg" aria-label="Teapot Pouring — P.G. 2 — simulation demonstration"><source src="static/videos/sim/1102/teapot-pg2.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/teapot-pg2.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-teapot-vg1" data-kind="vg" role="group" aria-label="V.G. · 4 of 6">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/teapot-vg1.jpg" aria-label="Teapot Pouring — V.G. — simulation demonstration"><source src="static/videos/sim/1102/teapot-vg1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/teapot-vg1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-teapot-og1" data-kind="og" role="group" aria-label="O.G. 1 · 5 of 6">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/teapot-og1.jpg" aria-label="Teapot Pouring — O.G. 1 — simulation demonstration"><source src="static/videos/sim/1102/teapot-og1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/teapot-og1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-teapot-og2" data-kind="og" role="group" aria-label="O.G. 2 · 6 of 6">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/teapot-og2.jpg" aria-label="Teapot Pouring — O.G. 2 — simulation demonstration"><source src="static/videos/sim/1102/teapot-og2.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/teapot-og2.mp4">Open the video</a>.</video></div>
+            </div></div>
+            <button class="simulation-arrow simulation-next" type="button" aria-label="Next Teapot Pouring video"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6 6 6-6 6"/></svg></button>
+          </div>
+          <div class="simulation-dots" role="group" aria-label="Teapot Pouring video position"><button type="button" class="simulation-dot" data-slide="0" aria-label="Show Base" aria-pressed="true" aria-controls="sim-teapot-base1"></button><button type="button" class="simulation-dot" data-slide="1" aria-label="Show P.G. 1" aria-pressed="false" aria-controls="sim-teapot-pg1"></button><button type="button" class="simulation-dot" data-slide="2" aria-label="Show P.G. 2" aria-pressed="false" aria-controls="sim-teapot-pg2"></button><button type="button" class="simulation-dot" data-slide="3" aria-label="Show V.G." aria-pressed="false" aria-controls="sim-teapot-vg1"></button><button type="button" class="simulation-dot" data-slide="4" aria-label="Show O.G. 1" aria-pressed="false" aria-controls="sim-teapot-og1"></button><button type="button" class="simulation-dot" data-slide="5" aria-label="Show O.G. 2" aria-pressed="false" aria-controls="sim-teapot-og2"></button></div>
+        </article>
+        <article class="simulation-task" data-simulation-carousel style="--simulation-aspect: 800 / 600" aria-labelledby="sim-drawer-title" aria-roledescription="carousel">
+          <div class="simulation-task-heading"><h3 id="sim-drawer-title">Drawer Storage</h3><span class="simulation-speed">2× speed</span></div>
+          <div class="simulation-types" role="group" aria-label="Drawer Storage video types"><button class="simulation-pill" type="button" data-slide="0" aria-pressed="true" aria-controls="sim-drawer-base1">Base</button><button class="simulation-pill" type="button" data-slide="1" aria-pressed="false" aria-controls="sim-drawer-pg1">P.G. 1</button><button class="simulation-pill" type="button" data-slide="2" aria-pressed="false" aria-controls="sim-drawer-pg2">P.G. 2</button><button class="simulation-pill" type="button" data-slide="3" aria-pressed="false" aria-controls="sim-drawer-pg3">P.G. 3</button><button class="simulation-pill" type="button" data-slide="4" aria-pressed="false" aria-controls="sim-drawer-vg1">V.G.</button><button class="simulation-pill" type="button" data-slide="5" aria-pressed="false" aria-controls="sim-drawer-og1">O.G.</button></div>
+          <div class="simulation-carousel">
+            <button class="simulation-arrow simulation-prev" type="button" aria-label="Previous Drawer Storage video"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button>
+            <div class="simulation-track" tabindex="0" role="group" aria-label="Drawer Storage videos"><div class="simulation-slide is-active" id="sim-drawer-base1" data-kind="base" role="group" aria-label="Base · 1 of 6">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/drawer-base1.jpg" aria-label="Drawer Storage — Base — simulation demonstration"><source src="static/videos/sim/1102/drawer-base1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/drawer-base1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-drawer-pg1" data-kind="pg" role="group" aria-label="P.G. 1 · 2 of 6">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/drawer-pg1.jpg" aria-label="Drawer Storage — P.G. 1 — simulation demonstration"><source src="static/videos/sim/1102/drawer-pg1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/drawer-pg1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-drawer-pg2" data-kind="pg" role="group" aria-label="P.G. 2 · 3 of 6">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/drawer-pg2.jpg" aria-label="Drawer Storage — P.G. 2 — simulation demonstration"><source src="static/videos/sim/1102/drawer-pg2.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/drawer-pg2.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-drawer-pg3" data-kind="pg" role="group" aria-label="P.G. 3 · 4 of 6">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/drawer-pg3.jpg" aria-label="Drawer Storage — P.G. 3 — simulation demonstration"><source src="static/videos/sim/1102/drawer-pg3.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/drawer-pg3.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-drawer-vg1" data-kind="vg" role="group" aria-label="V.G. · 5 of 6">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/drawer-vg1.jpg" aria-label="Drawer Storage — V.G. — simulation demonstration"><source src="static/videos/sim/1102/drawer-vg1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/drawer-vg1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-drawer-og1" data-kind="og" role="group" aria-label="O.G. · 6 of 6">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/drawer-og1.jpg" aria-label="Drawer Storage — O.G. — simulation demonstration"><source src="static/videos/sim/1102/drawer-og1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/drawer-og1.mp4">Open the video</a>.</video></div>
+            </div></div>
+            <button class="simulation-arrow simulation-next" type="button" aria-label="Next Drawer Storage video"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6 6 6-6 6"/></svg></button>
+          </div>
+          <div class="simulation-dots" role="group" aria-label="Drawer Storage video position"><button type="button" class="simulation-dot" data-slide="0" aria-label="Show Base" aria-pressed="true" aria-controls="sim-drawer-base1"></button><button type="button" class="simulation-dot" data-slide="1" aria-label="Show P.G. 1" aria-pressed="false" aria-controls="sim-drawer-pg1"></button><button type="button" class="simulation-dot" data-slide="2" aria-label="Show P.G. 2" aria-pressed="false" aria-controls="sim-drawer-pg2"></button><button type="button" class="simulation-dot" data-slide="3" aria-label="Show P.G. 3" aria-pressed="false" aria-controls="sim-drawer-pg3"></button><button type="button" class="simulation-dot" data-slide="4" aria-label="Show V.G." aria-pressed="false" aria-controls="sim-drawer-vg1"></button><button type="button" class="simulation-dot" data-slide="5" aria-label="Show O.G." aria-pressed="false" aria-controls="sim-drawer-og1"></button></div>
+        </article>
+        <article class="simulation-task" data-simulation-carousel style="--simulation-aspect: 800 / 800" aria-labelledby="sim-trash-bin-title" aria-roledescription="carousel">
+          <div class="simulation-task-heading"><h3 id="sim-trash-bin-title">Tabletop Waste Clearing</h3><span class="simulation-speed">2× speed</span></div>
+          <div class="simulation-types" role="group" aria-label="Tabletop Waste Clearing video types"><button class="simulation-pill" type="button" data-slide="0" aria-pressed="true" aria-controls="sim-trash-bin-base1">Base</button><button class="simulation-pill" type="button" data-slide="1" aria-pressed="false" aria-controls="sim-trash-bin-pg1">P.G. 1</button><button class="simulation-pill" type="button" data-slide="2" aria-pressed="false" aria-controls="sim-trash-bin-pg2">P.G. 2</button><button class="simulation-pill" type="button" data-slide="3" aria-pressed="false" aria-controls="sim-trash-bin-pg3">P.G. 3</button><button class="simulation-pill" type="button" data-slide="4" aria-pressed="false" aria-controls="sim-trash-bin-pg4">P.G. 4</button><button class="simulation-pill" type="button" data-slide="5" aria-pressed="false" aria-controls="sim-trash-bin-vg1">V.G.</button><button class="simulation-pill" type="button" data-slide="6" aria-pressed="false" aria-controls="sim-trash-bin-ng1">N.G.</button></div>
+          <div class="simulation-carousel">
+            <button class="simulation-arrow simulation-prev" type="button" aria-label="Previous Tabletop Waste Clearing video"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button>
+            <div class="simulation-track" tabindex="0" role="group" aria-label="Tabletop Waste Clearing videos"><div class="simulation-slide is-active" id="sim-trash-bin-base1" data-kind="base" role="group" aria-label="Base · 1 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/trash-bin-base1.jpg" aria-label="Tabletop Waste Clearing — Base — simulation demonstration"><source src="static/videos/sim/1102/trash-bin-base1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/trash-bin-base1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-trash-bin-pg1" data-kind="pg" role="group" aria-label="P.G. 1 · 2 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/trash-bin-pg1.jpg" aria-label="Tabletop Waste Clearing — P.G. 1 — simulation demonstration"><source src="static/videos/sim/1102/trash-bin-pg1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/trash-bin-pg1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-trash-bin-pg2" data-kind="pg" role="group" aria-label="P.G. 2 · 3 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/trash-bin-pg2.jpg" aria-label="Tabletop Waste Clearing — P.G. 2 — simulation demonstration"><source src="static/videos/sim/1102/trash-bin-pg2.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/trash-bin-pg2.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-trash-bin-pg3" data-kind="pg" role="group" aria-label="P.G. 3 · 4 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/trash-bin-pg3.jpg" aria-label="Tabletop Waste Clearing — P.G. 3 — simulation demonstration"><source src="static/videos/sim/1102/trash-bin-pg3.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/trash-bin-pg3.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-trash-bin-pg4" data-kind="pg" role="group" aria-label="P.G. 4 · 5 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/trash-bin-pg4.jpg" aria-label="Tabletop Waste Clearing — P.G. 4 — simulation demonstration"><source src="static/videos/sim/1102/trash-bin-pg4.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/trash-bin-pg4.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-trash-bin-vg1" data-kind="vg" role="group" aria-label="V.G. · 6 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/trash-bin-vg1.jpg" aria-label="Tabletop Waste Clearing — V.G. — simulation demonstration"><source src="static/videos/sim/1102/trash-bin-vg1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/trash-bin-vg1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-trash-bin-ng1" data-kind="ng" role="group" aria-label="N.G. · 7 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim-1102/trash-bin-ng1.jpg" aria-label="Tabletop Waste Clearing — N.G. — simulation demonstration"><source src="static/videos/sim/1102/trash-bin-ng1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/trash-bin-ng1.mp4">Open the video</a>.</video></div>
+            </div></div>
+            <button class="simulation-arrow simulation-next" type="button" aria-label="Next Tabletop Waste Clearing video"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6 6 6-6 6"/></svg></button>
+          </div>
+          <div class="simulation-dots" role="group" aria-label="Tabletop Waste Clearing video position"><button type="button" class="simulation-dot" data-slide="0" aria-label="Show Base" aria-pressed="true" aria-controls="sim-trash-bin-base1"></button><button type="button" class="simulation-dot" data-slide="1" aria-label="Show P.G. 1" aria-pressed="false" aria-controls="sim-trash-bin-pg1"></button><button type="button" class="simulation-dot" data-slide="2" aria-label="Show P.G. 2" aria-pressed="false" aria-controls="sim-trash-bin-pg2"></button><button type="button" class="simulation-dot" data-slide="3" aria-label="Show P.G. 3" aria-pressed="false" aria-controls="sim-trash-bin-pg3"></button><button type="button" class="simulation-dot" data-slide="4" aria-label="Show P.G. 4" aria-pressed="false" aria-controls="sim-trash-bin-pg4"></button><button type="button" class="simulation-dot" data-slide="5" aria-label="Show V.G." aria-pressed="false" aria-controls="sim-trash-bin-vg1"></button><button type="button" class="simulation-dot" data-slide="6" aria-label="Show N.G." aria-pressed="false" aria-controls="sim-trash-bin-ng1"></button></div>
+        </article>
+        </div>
+      </div>
+    </section>
+    <section class="content-section rsi-section" id="results" aria-labelledby="results-title">
+      <div class="rsi-section-inner">
+        <div class="section-heading"><h2 id="results-title">Agent guided training</h2></div>
+        <div id="drawer-rsi-figure" class="drawer-rsi-figure" data-drawer-rsi-figure data-component-base="static/components/drawer-rsi/">
+        
+          <section aria-labelledby="drawer-rsi-heading">
+            <div class="drawer-figure-head">
+              <h2 id="drawer-rsi-heading">Drawer Policy Evolution under RSI</h2>
+              <div class="drawer-legend" aria-label="Methods">
+                <button type="button" data-series="RSI" aria-pressed="true">
+                  <span class="drawer-legend-mark" aria-hidden="true"></span>RSI
+                </button>
+                <button type="button" data-series="Baseline" aria-pressed="true">
+                  <span class="drawer-legend-mark baseline" aria-hidden="true"></span>Baseline
+                </button>
+              </div>
+            </div>
+        
+        
+            <div class="drawer-success-summary" aria-label="Highest RSI success rates during training">
+              <div class="drawer-success-stat">
+                <span>Overall task success rate</span>
+                <strong>84/96 (87.5%)</strong>
+                <em>step 14,652</em>
+              </div>
+              <div class="drawer-success-stat">
+                <span>Peak success-rate difference</span>
+                <strong>+13.5 pp</strong>
+                <em>RSI 87.5% − baseline 74.0%</em>
+              </div>
+              <div class="drawer-success-stat">
+                <span>Close best</span>
+                <strong>32/32 (100%)</strong>
+              </div>
+              <div class="drawer-success-stat">
+                <span>Open-middle best</span>
+                <strong>26/32 (81.3%)</strong>
+              </div>
+              <div class="drawer-success-stat">
+                <span>Open-top best</span>
+                <strong>31/32 (96.9%)</strong>
+              </div>
+            </div>
+        
+            <ol class="drawer-events-mobile" aria-label="Key RSI interventions">
+              <li>Step 6,700: Generate 3k synthetic episodes; C/M/T = 30/25/45.</li>
+              <li>Step 9,380: Generate 6k synthetic episodes; C/M/T = 20/25/55.</li>
+              <li>Step 12,060: Middle recovery; C/M/T = 15/35/50.</li>
+              <li>Step 18,693: Open rebalancing; C/M/T = 10/45/45.</li>
+            </ol>
+        
+            <div class="drawer-loading" role="status">Loading interactive chart…</div>
+            <div class="drawer-component-error" role="alert" aria-hidden="true"></div>
+            <div class="drawer-panels">
+              <div class="drawer-panel overall" data-metric="overall"></div>
+              <div class="drawer-panel" data-metric="close"></div>
+              <div class="drawer-panel" data-metric="middle"></div>
+              <div class="drawer-panel" data-metric="top"></div>
+              <div class="drawer-trajectory-panel" data-trajectory-panel></div>
+            </div>
+            <div class="drawer-tooltip" role="tooltip" aria-hidden="true"></div>
+          </section>
+        
+          <dialog class="drawer-detail-dialog" aria-labelledby="drawer-detail-title">
+            <div class="drawer-detail-shell">
+              <div class="drawer-detail-header">
+                <h3 id="drawer-detail-title">Evaluation details</h3>
+                <button type="button" class="drawer-detail-close" aria-label="Close details">×</button>
+              </div>
+              <div class="drawer-detail-content"></div>
+            </div>
+          </dialog>
+        
+          <noscript>This interactive figure requires JavaScript.</noscript>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer page-width">
+    <a class="footer-brand" href="#top"><svg class="icon"><use href="#icon-mark"/></svg>DexSimWAM</a>
+    <p class="template-credit">Website template licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>.</p>
+  </footer>
+  <button class="scroll-to-top" type="button" aria-label="Back to top" hidden><svg class="icon"><use href="#icon-up"/></svg></button>
+  <dialog class="figure-dialog" id="figure-dialog" aria-label="Expanded research figure"><button class="dialog-close" type="button" aria-label="Close expanded figure"><svg class="icon"><use href="#icon-close"/></svg></button><img alt=""></dialog>
+</body>
+</html>
