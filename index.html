@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DexSimWAM: Scaling Dexterous World Action Models with Verified Simulation Data</title>
+  <meta name="description" content="DexSimWAM scales dexterous World Action Models with verified simulation data, large-scale pre-training, and task-specific post-training.">
+  <meta name="author" content="Anonymous authors">
+  <meta name="theme-color" content="#ffffff">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="DexSimWAM: Scaling Dexterous World Action Models with Verified Simulation Data">
+  <meta property="og:description" content="DexSimWAM scales dexterous World Action Models with verified simulation data, large-scale pre-training, and task-specific post-training.">
+  <meta name="citation_title" content="DexSimWAM: Scaling Dexterous World Action Models with Verified Simulation Data">
+  <meta name="citation_author" content="Anonymous authors">
+  <link rel="icon" href="static/images/agentic-wam-icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="static/css/index.css?v=centered-loop-1106">
+  <script src="static/js/index.js?v=gth-1116" defer></script>
+  <link rel="stylesheet" href="static/components/drawer-rsi/figure.css">
+  <link rel="stylesheet" href="static/components/drawer-rsi/story.css">
+  <link rel="stylesheet" href="static/components/drawer-rsi/homepage.css">
+  <script src="static/components/drawer-rsi/vendor/d3.min.js" defer></script>
+  <script src="static/components/drawer-rsi/js/drawer-rsi-data.js" defer></script>
+  <script src="static/components/drawer-rsi/js/scroll-story.js" defer></script>
+  <script src="static/components/drawer-rsi/js/drawer-rsi-figure.js" defer></script>
+  <script src="static/components/drawer-rsi/js/drawer-rsi-trajectory-overlay.js" defer></script>
+  <script src="static/components/drawer-rsi/js/viewer-detail.js" defer></script>
+  <link rel="stylesheet" href="static/css/rebuttal.css?v=matched-intro-1116">
+  <script src="static/js/rebuttal.js?v=reviewer-start-1116" defer></script>
+</head>
+<body>
+  <!-- Local icons keep the page independent of font and icon CDNs. -->
+  <svg class="svg-symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="icon-mark" viewBox="0 0 24 24"><path d="m3 17 5-10 4 7 4-7 5 10M6 17h12"/></symbol>
+    <symbol id="icon-play" viewBox="0 0 24 24"><path d="m9 5 11 7-11 7Z"/></symbol>
+    <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
+    <symbol id="icon-expand" viewBox="0 0 24 24"><path d="M14 4h6v6m0-6-7 7M10 20H4v-6m0 6 7-7"/></symbol>
+    <symbol id="icon-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="icon-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="m3 17 5-5 4 4 4-6 5 7"/><circle cx="8" cy="8" r="1"/></symbol>
+    <symbol id="icon-up" viewBox="0 0 24 24"><path d="M12 19V5m-6 6 6-6 6 6"/></symbol>
+  </svg>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <header class="site-header">
+    <nav class="site-nav page-width" aria-label="Main navigation">
+      <a class="nav-brand" href="#top"><span class="brand-icon"><svg class="icon"><use href="#icon-mark"/></svg></span>DexSimWAM</a>
+      <div class="nav-links"><a href="#rebuttal">Rebuttal</a><a href="#framework">Overview</a><a href="#skills">Result</a><a href="#results">Agent guided training</a></div>
+      <span class="nav-spacer" aria-hidden="true"></span>
+    </nav>
+  </header>
+  <main id="main-content">
+    <section class="publication-header page-width" id="top" aria-labelledby="paper-title">
+      <h1 id="paper-title" aria-label="DexSimWAM: Scaling Dexterous World Action Models with Verified Simulation Data"><span class="project-name">DexSimWAM</span> <span class="paper-title">Scaling Dexterous World Action Models<br class="desktop-break"> with Verified Simulation Data</span></h1>
+      <p class="publication-authors">Anonymous authors</p>
+    </section>
+<!-- REBUTTAL:START -->
+    <section class="rebuttal-section page-width" id="rebuttal" aria-labelledby="rebuttal-title">
+      <div class="rebuttal-heading"><h2 id="rebuttal-title">Rebuttal</h2></div>
+      <div class="rebuttal-shell"><div class="rebuttal-tabs" role="tablist" aria-label="Select a reviewer"><button type="button" id="reviewer-frmb-tab" role="tab" aria-controls="reviewer-frmb" aria-selected="true" tabindex="0"><span>Reviewer frmb</span></button>
+<button type="button" id="reviewer-7AaZ-tab" role="tab" aria-controls="reviewer-7AaZ" aria-selected="false" tabindex="-1"><span>Reviewer 7AaZ</span></button>
+<button type="button" id="reviewer-gygZ-tab" role="tab" aria-controls="reviewer-gygZ" aria-selected="false" tabindex="-1"><span>Reviewer gygZ</span></button></div><section class="rebuttal-panel" id="reviewer-frmb" role="tabpanel" aria-labelledby="reviewer-frmb-tab" tabindex="0"><div class="rebuttal-reviewer-intro"><p>We thank the reviewer for the detailed and constructive feedback. We respond to the main weaknesses first, followed by the remaining questions. We use <strong>W</strong> and <strong>Q</strong> to refer to the numbered weaknesses and questions, respectively.</p>
+</div><section class="rebuttal-revision-summary" aria-labelledby="reviewer-frmb-summary"><h3 id="reviewer-frmb-summary">Summary of revisions and updates.</h3><p>In the revised manuscript, we have refined the presentation throughout and clarified the Base, position-generalization, and visual-generalization evaluation protocols, including their post-training data and object-placement ranges. We have added object-generalization results on five tasks in simulation and on real robots, and clarified the data-generation settings and simulation–real post-training comparison. We have also expanded the description of the data-generation pipeline and distinguished the optional agent-guided training framework from the main method. Our updated project website also provides additional simulation and real-robot rollouts illustrating the tasks and evaluation settings.</p>
+</section><div class="rebuttal-items"><article class="rebuttal-item" id="rebuttal-frmb-1" aria-labelledby="rebuttal-frmb-1-title">
+      <div class="rebuttal-question-heading"><span class="rebuttal-question-code">W1</span><h3 id="rebuttal-frmb-1-title">Effects of pre-training and post-training.</h3></div>
+      <details class="rebuttal-answer" id="rebuttal-frmb-1-answer">
+        <summary><span class="rebuttal-answer-label">Answer</span><span class="rebuttal-answer-preview">We thank the reviewer for this suggestion. To further assess the effect of pre-training, we compare models with and without pre-training on two additional simulation tasks under the P.G. setting. After task-specific post-training, the…</span><span class="rebuttal-disclosure"><span class="when-closed">Show more</span><span class="when-open">Show less</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></span></summary>
+        <div class="rebuttal-answer-body"><p>We thank the reviewer for this suggestion. To further assess the effect of pre-training, we compare models with and without pre-training on two additional simulation tasks under the P.G. setting. After task-specific post-training, the pretrained models achieve 39.6% success on 6D-Pose Transfer and 27.1% on Tabletop Waste Clearing, compared with 25.0% and 18.8% without pre-training, respectively. These results complement the real-robot comparison in Table 2(a). For post-training, Table 2(b) compares the pretrained model before and after task-specific adaptation on simulated PnP. We acknowledge that this comparison currently covers only one task.</p>
+<button class="rebuttal-collapse" type="button">Show less ↑</button></div>
+      </details>
+    </article>
+<article class="rebuttal-item" id="rebuttal-frmb-2" aria-labelledby="rebuttal-frmb-2-title">
+      <div class="rebuttal-question-heading"><span class="rebuttal-question-code">W2 · Q4</span><h3 id="rebuttal-frmb-2-title">Agent choice, inputs, and outputs.</h3></div>
+      <details class="rebuttal-answer" id="rebuttal-frmb-2-answer">
+        <summary><span class="rebuttal-answer-label">Answer</span><span class="rebuttal-answer-preview">We thank the reviewer for this suggestion. We additionally compare three alternative guide models on Drawer Storage, using the same initial grasp bank, planning budgets, and physical acceptance criteria. Compared to the GPT-6 Astra experiment…</span><span class="rebuttal-disclosure"><span class="when-closed">Show more</span><span class="when-open">Show less</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></span></summary>
+        <div class="rebuttal-answer-body"><p>We thank the reviewer for this suggestion. We additionally compare three alternative guide models on Drawer Storage, using the same initial grasp bank, planning budgets, and physical acceptance criteria. Compared to the GPT-6 Astra experiment presented in the main text—under otherwise identical configuration settings—Qwen3.7-max, GLM-5.1, and DeepSeek-v4-pro achieved 61.1%, 60.0%, and 56.5% of accepted-trajectory throughput. These results show that the pipeline can generate valid demonstrations with alternative guide models, although production efficiency varies; GPT-6 Astra achieves the highest throughput in this comparison.</p>
+<p>We also apologize for the unclear interface description. The Agent-as-Guide receives the task description, scene schema, grasp-bank summary, preference statistics, and production outcome summaries, including failure stages and check results. It outputs a schema-constrained configuration specifying the phase graph, goal relations, per-phase cuRobo constraints and planning/retry budgets, scene and grasp sampling distributions, and optional grasp-bank expansion requests. Preference statistics serve as context for these decisions. The system validates the configuration, samples scenes and retrieves grasps, and instantiates the phase goals and constraints from the sampled scene and retrieved grasp before calling cuRobo.</p>
+<div class="rebuttal-interface-example"><p><em>The following illustrative example shows the interface for placing an object in a target region. Values are illustrative; the runtime validates the configuration against the task schema and geometry.</em></p>
+<p><strong>1. Prompt excerpt — illustrative</strong></p>
+<pre><code class="language-css">Use the task description, scene schema, grasp-bank summary,
+preference statistics, and production outcome summary to return
+a schema-constrained JSON configuration.
+
+Specify:
+- the ordered phase graph and goal relations;
+- per-phase cuRobo constraints and planning/retry budgets;
+- scene and grasp sampling distributions;
+- optional grasp-bank expansion requests.
+
+Use preference statistics and observed failures as context.
+Follow the allowed task schema and geometry. Do not bypass grasp
+admission, offline planning checks, or whole-task verification.
+</code></pre>
+<p><strong>2. Input context — abbreviated illustrative example</strong></p>
+<pre><code class="language-json">{
+  &quot;task_description&quot;: &quot;Pick up the bottle and place it in the target region.&quot;,
+  &quot;scene_schema&quot;: {
+    &quot;scene_ids&quot;: [&quot;scene_A&quot;, &quot;scene_B&quot;],
+    &quot;object&quot;: &quot;bottle&quot;,
+    &quot;target&quot;: &quot;target_region&quot;,
+    &quot;hand&quot;: &quot;left&quot;,
+    &quot;allowed_phase_sequence&quot;: [
+      &quot;approach&quot;, &quot;close&quot;, &quot;lift&quot;, &quot;transport&quot;, &quot;place&quot;, &quot;release&quot;, &quot;retreat&quot;
+    ]
+  },
+  &quot;grasp_bank_summary&quot;: {
+    &quot;version&quot;: 2,
+    &quot;object&quot;: &quot;bottle&quot;,
+    &quot;family_counts&quot;: {
+      &quot;2_Small_Diameter&quot;: 8,
+      &quot;3_Medium_Wrap&quot;: 4
+    }
+  },
+  &quot;preference_statistics&quot;: {
+    &quot;by_scene&quot;: {
+      &quot;scene_A&quot;: {&quot;attempts&quot;: 40, &quot;accepted&quot;: 24},
+      &quot;scene_B&quot;: {&quot;attempts&quot;: 10, &quot;accepted&quot;: 3}
+    }
+  },
+  &quot;production_outcome_summary&quot;: {
+    &quot;representative_failure&quot;: {
+      &quot;scene&quot;: &quot;scene_B&quot;,
+      &quot;phase&quot;: &quot;transport&quot;,
+      &quot;check_result&quot;: &quot;collision_check_failed&quot;
+    }
+  }
+}
+</code></pre>
+<p><strong>3. Output configuration — abbreviated illustrative example</strong></p>
+<p><em>The output specifies sampling weights and an ordered phase graph. One phase is expanded below to show its goal relation, constraints, and budgets; a complete configuration contains these fields for every phase.</em></p>
+<pre><code class="language-json">{
+  &quot;scene&quot;: {
+    &quot;weights&quot;: {&quot;scene_A&quot;: 0.4, &quot;scene_B&quot;: 0.6}
+  },
+  &quot;grasp&quot;: {
+    &quot;family_weights&quot;: {
+      &quot;2_Small_Diameter&quot;: 0.7,
+      &quot;3_Medium_Wrap&quot;: 0.3
+    },
+    &quot;max_candidates&quot;: 4,
+    &quot;novelty_weight&quot;: 0.5
+  },
+  &quot;phase_order&quot;: [
+    &quot;approach&quot;, &quot;close&quot;, &quot;lift&quot;, &quot;transport&quot;, &quot;place&quot;, &quot;release&quot;, &quot;retreat&quot;
+  ],
+  &quot;phase_example&quot;: {
+    &quot;id&quot;: &quot;transport&quot;,
+    &quot;goal_relation&quot;: {
+      &quot;type&quot;: &quot;above&quot;,
+      &quot;target&quot;: &quot;target_region&quot;
+    },
+    &quot;collision&quot;: {&quot;margin_m&quot;: 0.004},
+    &quot;tolerance&quot;: {
+      &quot;position_m&quot;: 0.01,
+      &quot;rotation_deg&quot;: 5.0
+    },
+    &quot;time_budget_s&quot;: 240.0,
+    &quot;retry_budget&quot;: 4
+  },
+  &quot;expansion&quot;: {
+    &quot;enabled&quot;: false,
+    &quot;budget&quot;: 0
+  }
+}
+</code></pre>
+<p><em>Here, the proposed sampling distribution allocates more attempts to the less-covered scene. This illustrates a possible agent decision, rather than a fixed rule derived from success rates.</em></p>
+<p><strong>4. Runtime consumption — pseudocode</strong></p>
+<p><em>The agent specifies symbolic goals and planning settings. The runtime combines them with the sampled scene and retrieved grasp to instantiate numerical planning targets, as described in the paper’s production algorithm.</em></p>
+<pre><code class="language-lua">context = {
+    &quot;task&quot;: task,
+    &quot;scene_schema&quot;: scene_schema,
+    &quot;grasp_bank_summary&quot;: summarize(bank),
+    &quot;preference_statistics&quot;: preference_statistics(history, bank),
+    &quot;production_outcome_summary&quot;: extract_outcome_summary(history),
+}
+config = agent_guide(context)
+validate_configuration(config, task, assets)
+
+if requests_expansion(config):
+    candidates = dexonomy_generate(expansion_specification(config))
+    additions = object_frame_deduplicate(free_hand_filter(candidates))
+    bank = versioned_merge(bank, additions)
+
+scene = sample_task_scene(task, assets, config.scene)
+grasp = retrieve_grasp(bank, scene, config.grasp)
+phases, goals, constraints, budgets = instantiate_task_plan(
+    task, scene, grasp, config
+)
+
+trajectory = []
+for phase in phases:
+    segment = curobo_plan(
+        phase, goals[phase], constraints[phase], budgets[phase]
+    )
+    status = offline_check(segment, goals[phase], constraints[phase])
+    if status != &quot;feasible&quot;:
+        outcome = failure_outcome(phase, status)
+        break
+    trajectory = concatenate(trajectory, segment)
+else:
+    outcome = mujoco_replay_and_verify(task, scene, grasp, trajectory)
+
+history.append((scene, grasp, phases, outcome))
+if whole_task_accepted(outcome):
+    isaac_sim_render_and_export(scene, grasp, trajectory)
+</code></pre>
+</div><button class="rebuttal-collapse" type="button">Show less ↑</button></div>
+      </details>
+    </article>
+<article class="rebuttal-item" id="rebuttal-frmb-3" aria-labelledby="rebuttal-frmb-3-title">
+      <div class="rebuttal-question-heading"><span class="rebuttal-question-code">W3 · Q1</span><h3 id="rebuttal-frmb-3-title">Task-specific post-training and generalization.</h3></div>
+      <details class="rebuttal-answer" id="rebuttal-frmb-3-answer">
+        <summary><span class="rebuttal-answer-label">Answer</span><span class="rebuttal-answer-preview">Yes, in our main comparison, DexSimWAM and the baselines are post-trained separately for each task. Although π₀.₅ and Fast-WAM are pretrained generalist models, their pretrained interfaces are not directly compatible with our robot&#39;s…</span><span class="rebuttal-disclosure"><span class="when-closed">Show more</span><span class="when-open">Show less</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></span></summary>
+        <div class="rebuttal-answer-body"><p>Yes, in our main comparison, DexSimWAM and the baselines are post-trained separately for each task. Although π₀.₅ and Fast-WAM are pretrained generalist models, their pretrained interfaces are not directly compatible with our robot&#39;s observation and action spaces. Post-training is therefore needed to adapt them to these interfaces for meaningful evaluation. We agree that post-training a single model on a mixture of tasks is a valuable experiment. We evaluate DexSimWAM, LDA-1B, and the pretrained T-Rex [1] model without tactile input on five manually selected RoboCasa GR-1 Tabletop Tasks [2]. For each method, we jointly post-train a single model on a mixture of demonstrations from all five tasks, using 480 demonstrations per task, with a global batch size of 64 for 30k steps, and evaluate it on each task over 48 trials. Success rates (%) are:</p>
+<p class="rebuttal-reference-overview"><span class="rebuttal-reference-intro">The table and videos present success rates and representative successful and failed rollouts on five RoboCasa tasks.</span><span class="rebuttal-reference-links"><a class="rebuttal-reference" id="rebuttal-frmb-3-evidence-1-ref" href="#rebuttal-frmb-3-evidence-1">[Table 1]</a> <a class="rebuttal-reference" id="rebuttal-frmb-3-evidence-2-ref" href="#rebuttal-frmb-3-evidence-2">[Video 2]</a></span></p><div class="rebuttal-evidence"><h5>Supporting evidence</h5><figure class="rebuttal-evidence-item" id="rebuttal-frmb-3-evidence-1" tabindex="-1"><figcaption><span>Table 1</span><a href="#rebuttal-frmb-3-evidence-1-ref" class="rebuttal-backlink">Back to answer ↑</a></figcaption><div data-rebuttal-evidence="Table"><div class="rebuttal-table-scroll"><table class="robocasa-results"><thead><tr><th scope="col">Task</th><th scope="col">DexSimWAM</th><th scope="col">LDA-1B</th><th scope="col">T-Rex</th></tr></thead><tbody><tr><th scope="row">PnP Can to Drawer Close</th><td class="best">72.92</td><td class="runner-up">62.50</td><td>56.25</td></tr><tr><th scope="row">PnP Milk to Microwave Close</th><td class="best">56.25</td><td>43.75</td><td class="runner-up">52.08</td></tr><tr><th scope="row">PnP Novel from Cutting Board to Pan</th><td class="best">52.08</td><td class="runner-up">10.42</td><td>6.25</td></tr><tr><th scope="row">PnP Novel from Placemat to Plate</th><td class="best">25.00</td><td>2.08</td><td class="runner-up">10.42</td></tr><tr><th scope="row">PnP Novel from Plate to Cardboard Box</th><td class="best">18.75</td><td class="runner-up">12.50</td><td class="runner-up">12.50</td></tr><tr class="mean-row"><th scope="row">Five-task mean</th><td class="best">45.00</td><td>26.25</td><td class="runner-up">27.50</td></tr></tbody></table></div></div>
+
+</figure>
+<figure class="rebuttal-evidence-item" id="rebuttal-frmb-3-evidence-2" tabindex="-1"><figcaption><span>Video 2</span><a href="#rebuttal-frmb-3-evidence-2-ref" class="rebuttal-backlink">Back to answer ↑</a></figcaption><div data-rebuttal-evidence="Video"><div class="simulation-task rebuttal-rollouts" data-simulation-carousel style="--simulation-aspect: 256 / 160"><p class="rollout-active-caption" data-active-caption>PnP Can to Drawer Close · Success 1</p><div class="simulation-types" role="group" aria-label="RoboCasa rollout selection"><button class="simulation-pill" type="button" data-slide="0" aria-pressed="true" aria-controls="rebuttal-frmb-3-rollout-0">Can to Drawer · Success 1</button><button class="simulation-pill" type="button" data-slide="1" aria-pressed="false" aria-controls="rebuttal-frmb-3-rollout-1">Can to Drawer · Success 2</button><button class="simulation-pill" type="button" data-slide="2" aria-pressed="false" aria-controls="rebuttal-frmb-3-rollout-2">Can to Drawer · Failure</button><button class="simulation-pill" type="button" data-slide="3" aria-pressed="false" aria-controls="rebuttal-frmb-3-rollout-3">Milk to Microwave · Success 1</button><button class="simulation-pill" type="button" data-slide="4" aria-pressed="false" aria-controls="rebuttal-frmb-3-rollout-4">Milk to Microwave · Success 2</button><button class="simulation-pill" type="button" data-slide="5" aria-pressed="false" aria-controls="rebuttal-frmb-3-rollout-5">Milk to Microwave · Failure</button><button class="simulation-pill" type="button" data-slide="6" aria-pressed="false" aria-controls="rebuttal-frmb-3-rollout-6">Cutting Board to Pan · Success 1</button><button class="simulation-pill" type="button" data-slide="7" aria-pressed="false" aria-controls="rebuttal-frmb-3-rollout-7">Cutting Board to Pan · Success 2</button><button class="simulation-pill" type="button" data-slide="8" aria-pressed="false" aria-controls="rebuttal-frmb-3-rollout-8">Cutting Board to Pan · Failure</button><button class="simulation-pill" type="button" data-slide="9" aria-pressed="false" aria-controls="rebuttal-frmb-3-rollout-9">Placemat to Plate · Success 1</button><button class="simulation-pill" type="button" data-slide="10" aria-pressed="false" aria-controls="rebuttal-frmb-3-rollout-10">Placemat to Plate · Success 2</button><button class="simulation-pill" type="button" data-slide="11" aria-pressed="false" aria-controls="rebuttal-frmb-3-rollout-11">Placemat to Plate · Failure</button><button class="simulation-pill" type="button" data-slide="12" aria-pressed="false" aria-controls="rebuttal-frmb-3-rollout-12">Plate to Box · Success 1</button><button class="simulation-pill" type="button" data-slide="13" aria-pressed="false" aria-controls="rebuttal-frmb-3-rollout-13">Plate to Box · Success 2</button><button class="simulation-pill" type="button" data-slide="14" aria-pressed="false" aria-controls="rebuttal-frmb-3-rollout-14">Plate to Box · Failure</button></div><div class="simulation-carousel"><button class="simulation-arrow simulation-prev" type="button" aria-label="Previous RoboCasa rollout">‹</button><div class="simulation-track" tabindex="0" role="group" aria-label="RoboCasa rollouts"><div class="simulation-slide" id="rebuttal-frmb-3-rollout-0" data-caption="PnP Can to Drawer Close · Success 1"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task0_SUC1.webp" aria-label="PnP Can to Drawer Close · Success 1"><source data-src="static/videos/rebuttal/robocasa/task0_SUC1.mp4" type="video/mp4"></video></div></div><div class="simulation-slide" id="rebuttal-frmb-3-rollout-1" data-caption="PnP Can to Drawer Close · Success 2"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task0_SUC2.webp" aria-label="PnP Can to Drawer Close · Success 2"><source data-src="static/videos/rebuttal/robocasa/task0_SUC2.mp4" type="video/mp4"></video></div></div><div class="simulation-slide" id="rebuttal-frmb-3-rollout-2" data-caption="PnP Can to Drawer Close · Failure"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task0_FAIL.webp" aria-label="PnP Can to Drawer Close · Failure"><source data-src="static/videos/rebuttal/robocasa/task0_FAIL.mp4" type="video/mp4"></video></div></div><div class="simulation-slide" id="rebuttal-frmb-3-rollout-3" data-caption="PnP Milk to Microwave Close · Success 1"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task1_SUC1.webp" aria-label="PnP Milk to Microwave Close · Success 1"><source data-src="static/videos/rebuttal/robocasa/task1_SUC1.mp4" type="video/mp4"></video></div></div><div class="simulation-slide" id="rebuttal-frmb-3-rollout-4" data-caption="PnP Milk to Microwave Close · Success 2"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task1_SUC2.webp" aria-label="PnP Milk to Microwave Close · Success 2"><source data-src="static/videos/rebuttal/robocasa/task1_SUC2.mp4" type="video/mp4"></video></div></div><div class="simulation-slide" id="rebuttal-frmb-3-rollout-5" data-caption="PnP Milk to Microwave Close · Failure"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task1_FAIL.webp" aria-label="PnP Milk to Microwave Close · Failure"><source data-src="static/videos/rebuttal/robocasa/task1_FAIL.mp4" type="video/mp4"></video></div></div><div class="simulation-slide" id="rebuttal-frmb-3-rollout-6" data-caption="PnP Novel from Cutting Board to Pan · Success 1"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task2_SUC1.webp" aria-label="PnP Novel from Cutting Board to Pan · Success 1"><source data-src="static/videos/rebuttal/robocasa/task2_SUC1.mp4" type="video/mp4"></video></div></div><div class="simulation-slide" id="rebuttal-frmb-3-rollout-7" data-caption="PnP Novel from Cutting Board to Pan · Success 2"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task2_SUC2.webp" aria-label="PnP Novel from Cutting Board to Pan · Success 2"><source data-src="static/videos/rebuttal/robocasa/task2_SUC2.mp4" type="video/mp4"></video></div></div><div class="simulation-slide" id="rebuttal-frmb-3-rollout-8" data-caption="PnP Novel from Cutting Board to Pan · Failure"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task2_FAIL.webp" aria-label="PnP Novel from Cutting Board to Pan · Failure"><source data-src="static/videos/rebuttal/robocasa/task2_FAIL.mp4" type="video/mp4"></video></div></div><div class="simulation-slide" id="rebuttal-frmb-3-rollout-9" data-caption="PnP Novel from Placemat to Plate · Success 1"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task3_SUC1.webp" aria-label="PnP Novel from Placemat to Plate · Success 1"><source data-src="static/videos/rebuttal/robocasa/task3_SUC1.mp4" type="video/mp4"></video></div></div><div class="simulation-slide" id="rebuttal-frmb-3-rollout-10" data-caption="PnP Novel from Placemat to Plate · Success 2"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task3_SUC2.webp" aria-label="PnP Novel from Placemat to Plate · Success 2"><source data-src="static/videos/rebuttal/robocasa/task3_SUC2.mp4" type="video/mp4"></video></div></div><div class="simulation-slide" id="rebuttal-frmb-3-rollout-11" data-caption="PnP Novel from Placemat to Plate · Failure"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task3_FAIL.webp" aria-label="PnP Novel from Placemat to Plate · Failure"><source data-src="static/videos/rebuttal/robocasa/task3_FAIL.mp4" type="video/mp4"></video></div></div><div class="simulation-slide" id="rebuttal-frmb-3-rollout-12" data-caption="PnP Novel from Plate to Cardboard Box · Success 1"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task4_SUC1.webp" aria-label="PnP Novel from Plate to Cardboard Box · Success 1"><source data-src="static/videos/rebuttal/robocasa/task4_SUC1.mp4" type="video/mp4"></video></div></div><div class="simulation-slide" id="rebuttal-frmb-3-rollout-13" data-caption="PnP Novel from Plate to Cardboard Box · Success 2"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task4_SUC2.webp" aria-label="PnP Novel from Plate to Cardboard Box · Success 2"><source data-src="static/videos/rebuttal/robocasa/task4_SUC2.mp4" type="video/mp4"></video></div></div><div class="simulation-slide" id="rebuttal-frmb-3-rollout-14" data-caption="PnP Novel from Plate to Cardboard Box · Failure"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task4_FAIL.webp" aria-label="PnP Novel from Plate to Cardboard Box · Failure"><source data-src="static/videos/rebuttal/robocasa/task4_FAIL.mp4" type="video/mp4"></video></div></div></div><button class="simulation-arrow simulation-next" type="button" aria-label="Next RoboCasa rollout">›</button></div></div></div></figure></div><button class="rebuttal-collapse" type="button">Show less ↑</button></div>
+      </details>
+    </article>
+<article class="rebuttal-item" id="rebuttal-frmb-4" aria-labelledby="rebuttal-frmb-4-title">
+      <div class="rebuttal-question-heading"><span class="rebuttal-question-code">W4</span><h3 id="rebuttal-frmb-4-title">Focus and presentation.</h3></div>
+      <details class="rebuttal-answer" id="rebuttal-frmb-4-answer">
+        <summary><span class="rebuttal-answer-label">Answer</span><span class="rebuttal-answer-preview">We thank the reviewer for this suggestion. We have clarified that the agent used for data generation is part of the main pipeline, whereas the WAM orchestration and rollout-guided post-training framework in the appendix is optional and…</span><span class="rebuttal-disclosure"><span class="when-closed">Show more</span><span class="when-open">Show less</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></span></summary>
+        <div class="rebuttal-answer-body"><p>We thank the reviewer for this suggestion. We have clarified that the agent used for data generation is part of the main pipeline, whereas the WAM orchestration and rollout-guided post-training framework in the appendix is optional and exploratory. Similarly, Training-Time RTC is an optional implementation that can make execution noticeably smoother and improve the quality of visual demonstrations; all main results use standard post-training without RTC. We will further improve the organization and presentation to keep the paper focused on its core contribution.</p>
+<button class="rebuttal-collapse" type="button">Show less ↑</button></div>
+      </details>
+    </article>
+<article class="rebuttal-item" id="rebuttal-frmb-5" aria-labelledby="rebuttal-frmb-5-title">
+      <div class="rebuttal-question-heading"><span class="rebuttal-question-code">Q2 · Q3</span><h3 id="rebuttal-frmb-5-title">Evaluation settings and models.</h3></div>
+      <details class="rebuttal-answer" id="rebuttal-frmb-5-answer">
+        <summary><span class="rebuttal-answer-label">Answer</span><span class="rebuttal-answer-preview">We apologize that these settings were not sufficiently clear in the original submission. Base uses a fixed selection of task-relevant objects, familiar scene appearances, and a restricted object-position range. P.G. expands the position range…</span><span class="rebuttal-disclosure"><span class="when-closed">Show more</span><span class="when-open">Show less</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></span></summary>
+        <div class="rebuttal-answer-body"><p>We apologize that these settings were not sufficiently clear in the original submission. Base uses a fixed selection of task-relevant objects, familiar scene appearances, and a restricted object-position range. P.G. expands the position range to the task-specific placement region and uses a separately post-trained model, trained on the same number of demonstrations collected within that expanded range. For both settings, test positions are resampled within their respective post-training ranges. V.G. uses the Base-trained model and position range, but changes the tabletop appearance and adds distractors unseen during post-training. We have clarified these settings in Section 4 and Appendix B of the latest version of the manuscript, including the task-specific placement ranges and object selection. Representative rollouts illustrating these settings are also available in the “<a href="#sim-to-real">Dexterous Manipulation in the Real World</a>” and “<a href="#skills">Dexterous Skills in Simulation</a>” sections of our project website.</p>
+<button class="rebuttal-collapse" type="button">Show less ↑</button></div>
+      </details>
+    </article>
+<article class="rebuttal-item" id="rebuttal-frmb-6" aria-labelledby="rebuttal-frmb-6-title">
+      <div class="rebuttal-question-heading"><span class="rebuttal-question-code">Q5</span><h3 id="rebuttal-frmb-6-title">Simulation–real post-training data.</h3></div>
+      <details class="rebuttal-answer" id="rebuttal-frmb-6-answer">
+        <summary><span class="rebuttal-answer-label">Answer</span><span class="rebuttal-answer-preview">This experiment primarily evaluates whether simulation-generated data can support direct sim-to-real transfer. Simulation-only post-training achieves 45.8% success on real robot, suggesting that it can reduce the need for real-robot data…</span><span class="rebuttal-disclosure"><span class="when-closed">Show more</span><span class="when-open">Show less</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></span></summary>
+        <div class="rebuttal-answer-body"><p>This experiment primarily evaluates whether simulation-generated data can support direct sim-to-real transfer. Simulation-only post-training achieves 45.8% success on real robot, suggesting that it can reduce the need for real-robot data collection when moderate performance is sufficient, although it remains less effective than real-only post-training.</p>
+<p>All three variants use the same data pool of 100 real and 100 simulated trajectories, with different probabilities of sampling from each domain. Under the same training budget, sampling equally from both domains achieves 83.3% real-robot success, compared with 87.5% when sampling only real data. This decrease may reflect the remaining sim-to-real gap and the lower proportion of real samples during training. We have not yet investigated how to better leverage simulation data to improve real-world deployment performance over real-only post-training.</p>
+<button class="rebuttal-collapse" type="button">Show less ↑</button></div>
+      </details>
+    </article>
+<article class="rebuttal-item" id="rebuttal-frmb-7" aria-labelledby="rebuttal-frmb-7-title">
+      <div class="rebuttal-question-heading"><span class="rebuttal-question-code">Q6</span><h3 id="rebuttal-frmb-7-title">Post-training data in Table 11.</h3></div>
+      <details class="rebuttal-answer" id="rebuttal-frmb-7-answer">
+        <summary><span class="rebuttal-answer-label">Answer</span><span class="rebuttal-answer-preview">Yes. All models in Table 11 are post-trained using real-robot data only; no simulation trajectories are mixed into their task-specific post-training data.</span><span class="rebuttal-disclosure"><span class="when-closed">Show more</span><span class="when-open">Show less</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></span></summary>
+        <div class="rebuttal-answer-body"><p>Yes. All models in Table 11 are post-trained using real-robot data only; no simulation trajectories are mixed into their task-specific post-training data.</p>
+<button class="rebuttal-collapse" type="button">Show less ↑</button></div>
+      </details>
+    </article>
+<article class="rebuttal-item" id="rebuttal-frmb-8" aria-labelledby="rebuttal-frmb-8-title">
+      <div class="rebuttal-question-heading"><span class="rebuttal-question-code">Q7</span><h3 id="rebuttal-frmb-8-title">Pre-training data composition.</h3></div>
+      <details class="rebuttal-answer" id="rebuttal-frmb-8-answer">
+        <summary><span class="rebuttal-answer-label">Answer</span><span class="rebuttal-answer-preview">We prioritize pick-and-place data because grasping and transferring objects are fundamental components of many manipulation tasks. Our pipeline can also generate more diverse tool-use and articulated-object interactions, as well as…</span><span class="rebuttal-disclosure"><span class="when-closed">Show more</span><span class="when-open">Show less</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></span></summary>
+        <div class="rebuttal-answer-body"><p>We prioritize pick-and-place data because grasping and transferring objects are fundamental components of many manipulation tasks. Our pipeline can also generate more diverse tool-use and articulated-object interactions, as well as contextualized pick-and-place tasks.</p>
+<p> We will incorporate these tasks into pre-training and evaluate their effect on downstream performance.</p>
+<p>We list the bottle/box, teapot/mug, and bowl transfer data separately for two reasons. First, these objects have explicit grasp-semantic requirements: for example, fingers should not enter the interior of a mug, and a teapot should be grasped by its handle rather than its spout. These object-specific requirements are manually specified in the task description, whereas general-object transfer uses more generic grasping requirements. Second, their assets were reconstructed from physical objects acquired by us, whereas most general-object assets were taken from public datasets. We will clarify these distinctions in the revised manuscript.</p>
+<p class="rebuttal-reference-overview"><span class="rebuttal-reference-intro">The videos show tool use, articulated-object manipulation, and contextualized pick-and-place tasks.</span><span class="rebuttal-reference-links"><a class="rebuttal-reference" id="rebuttal-frmb-8-evidence-1-ref" href="#rebuttal-frmb-8-evidence-1">[Video 1]</a></span></p><div class="rebuttal-evidence"><h5>Supporting evidence</h5><figure class="rebuttal-evidence-item" id="rebuttal-frmb-8-evidence-1" tabindex="-1"><figcaption><span>Video 1</span><a href="#rebuttal-frmb-8-evidence-1-ref" class="rebuttal-backlink">Back to answer ↑</a></figcaption><div data-rebuttal-evidence="Video"><div class="rebuttal-four-video-row"><div class="rebuttal-task-video"><p class="rebuttal-task-video-name">Hammer Use</p><div class="media-frame has-media video-frame" style="aspect-ratio:960 / 816"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/diversity/hammer_use.webp" aria-label="Hammer Use — 2× speed"><source data-src="static/videos/rebuttal/task-diversity/hammer_use.mp4" type="video/mp4"></video></div></div><div class="rebuttal-task-video"><p class="rebuttal-task-video-name">Compact Transfer</p><div class="media-frame has-media video-frame" style="aspect-ratio:960 / 816"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/diversity/compact_transfer.webp" aria-label="Compact Transfer — 2× speed"><source data-src="static/videos/rebuttal/task-diversity/compact_transfer.mp4" type="video/mp4"></video></div></div><div class="rebuttal-task-video"><p class="rebuttal-task-video-name">Chess</p><div class="media-frame has-media video-frame" style="aspect-ratio:960 / 816"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/diversity/chess.webp" aria-label="Chess — 2× speed"><source data-src="static/videos/rebuttal/task-diversity/chess.mp4" type="video/mp4"></video></div></div><div class="rebuttal-task-video"><p class="rebuttal-task-video-name">Microwave</p><div class="media-frame has-media video-frame" style="aspect-ratio:960 / 816"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/diversity/microwave.webp" aria-label="Microwave — 2× speed"><source data-src="static/videos/rebuttal/task-diversity/microwave.mp4" type="video/mp4"></video></div></div></div></div>
+
+</figure></div><button class="rebuttal-collapse" type="button">Show less ↑</button></div>
+      </details>
+    </article>
+<article class="rebuttal-item" id="rebuttal-frmb-9" aria-labelledby="rebuttal-frmb-9-title">
+      <div class="rebuttal-question-heading"><span class="rebuttal-question-code">Q8</span><h3 id="rebuttal-frmb-9-title">Failure modes.</h3></div>
+      <details class="rebuttal-answer" id="rebuttal-frmb-9-answer">
+        <summary><span class="rebuttal-answer-label">Answer</span><span class="rebuttal-answer-preview">We will include an analysis of failure modes across tasks in a future revision.</span><span class="rebuttal-disclosure"><span class="when-closed">Show more</span><span class="when-open">Show less</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></span></summary>
+        <div class="rebuttal-answer-body"><p>We will include an analysis of failure modes across tasks in a future revision.</p>
+<button class="rebuttal-collapse" type="button">Show less ↑</button></div>
+      </details>
+    </article>
+<article class="rebuttal-item" id="rebuttal-frmb-10" aria-labelledby="rebuttal-frmb-10-title">
+      <div class="rebuttal-question-heading"><span class="rebuttal-question-code">Q9</span><h3 id="rebuttal-frmb-10-title">Roles of MuJoCo and Isaac Sim.</h3></div>
+      <details class="rebuttal-answer" id="rebuttal-frmb-10-answer">
+        <summary><span class="rebuttal-answer-label">Answer</span><span class="rebuttal-answer-preview">We use MuJoCo for physics-based trajectory verification because its open-source, standalone design fits our verification pipeline. We then use Isaac Sim&#39;s RTX renderer to generate the visual observations, as it provides a practical balance…</span><span class="rebuttal-disclosure"><span class="when-closed">Show more</span><span class="when-open">Show less</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></span></summary>
+        <div class="rebuttal-answer-body"><p>We use MuJoCo for physics-based trajectory verification because its open-source, standalone design fits our verification pipeline. We then use Isaac Sim&#39;s RTX renderer to generate the visual observations, as it provides a practical balance between rendering realism and efficiency. This is an engineering choice that separates physics verification from visual data generation; either platform could in principle support a more unified workflow.</p>
+<button class="rebuttal-collapse" type="button">Show less ↑</button></div>
+      </details>
+    </article></div></section>
+<section class="rebuttal-panel" id="reviewer-7AaZ" role="tabpanel" aria-labelledby="reviewer-7AaZ-tab" tabindex="0"><div class="rebuttal-reviewer-intro"><p>We thank the reviewer for recognizing the scalable data-generation pipeline and the benefits of larger-scale pre-training. We address the questions on scaling evidence, adaptation efficiency, and the contributions of individual pipeline components below.</p>
+</div><section class="rebuttal-revision-summary" aria-labelledby="reviewer-7AaZ-summary"><h3 id="reviewer-7AaZ-summary">Summary of revisions and updates.</h3><p>In the revised manuscript, we have refined the presentation throughout and clarified the Base, position-generalization, and visual-generalization evaluation protocols, including their post-training data and object-placement ranges. We have added object-generalization results on five tasks in simulation and on real robots, and clarified the data-generation settings and simulation–real post-training comparison. We have also expanded the description of the data-generation pipeline and distinguished the optional agent-guided training framework from the main method. Our updated project website also provides additional simulation and real-robot rollouts illustrating the tasks and evaluation settings.</p>
+</section><div class="rebuttal-items"><article class="rebuttal-item" id="rebuttal-7AaZ-1" aria-labelledby="rebuttal-7AaZ-1-title">
+      <div class="rebuttal-question-heading"><span class="rebuttal-question-code">W1</span><h3 id="rebuttal-7AaZ-1-title">Pre-training benefits across downstream tasks.</h3></div>
+      <details class="rebuttal-answer" id="rebuttal-7AaZ-1-answer">
+        <summary><span class="rebuttal-answer-label">Answer</span><span class="rebuttal-answer-preview">We additionally compare models with and without pre-training on two simulation tasks under the P.G. setting, using the same post-training data and training configuration. After post-training, models initialized from the pretrained checkpoint…</span><span class="rebuttal-disclosure"><span class="when-closed">Show more</span><span class="when-open">Show less</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></span></summary>
+        <div class="rebuttal-answer-body"><p>We additionally compare models with and without pre-training on two simulation tasks under the P.G. setting, using the same post-training data and training configuration. After post-training, models initialized from the pretrained checkpoint achieve 39.6% success on 6D-Pose Transfer and 27.1% on Tabletop Waste Clearing, compared with 25.0% and 18.8% for models without pre-training, respectively. These results show that the benefit of pre-training extends beyond the original real-robot task. We will further evaluate other pre-training data scales across multiple tasks.</p>
+<button class="rebuttal-collapse" type="button">Show less ↑</button></div>
+      </details>
+    </article>
+<article class="rebuttal-item" id="rebuttal-7AaZ-2" aria-labelledby="rebuttal-7AaZ-2-title">
+      <div class="rebuttal-question-heading"><span class="rebuttal-question-code">W2</span><h3 id="rebuttal-7AaZ-2-title">Post-training efficiency.</h3></div>
+      <details class="rebuttal-answer" id="rebuttal-7AaZ-2-answer">
+        <summary><span class="rebuttal-answer-label">Answer</span><span class="rebuttal-answer-preview">We evaluate intermediate checkpoints on the same two simulation tasks. After 20k post-training steps, the pretrained models achieve 37.5% success on 6D-Pose Transfer and 29.2% on Tabletop Waste Clearing, exceeding the respective 25.0% and 18.8%…</span><span class="rebuttal-disclosure"><span class="when-closed">Show more</span><span class="when-open">Show less</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></span></summary>
+        <div class="rebuttal-answer-body"><p>We evaluate intermediate checkpoints on the same two simulation tasks. After 20k post-training steps, the pretrained models achieve 37.5% success on 6D-Pose Transfer and 29.2% on Tabletop Waste Clearing, exceeding the respective 25.0% and 18.8% achieved without pre-training after 60k steps. The pretrained models also exhibit lower held-out action flow-matching loss early in training on both tasks, evaluated using the same validation set and loss calculation for each pair of models. Together, these results suggest that pre-training improves adaptation efficiency in the evaluated settings.</p>
+
+
+<p class="rebuttal-reference-overview"><span class="rebuttal-reference-intro">The curves compare post-training success rates and held-out action loss with and without pre-training.</span><span class="rebuttal-reference-links"><a class="rebuttal-reference" id="rebuttal-7AaZ-2-evidence-1-ref" href="#rebuttal-7AaZ-2-evidence-1">[Figure 1]</a> <a class="rebuttal-reference" id="rebuttal-7AaZ-2-evidence-2-ref" href="#rebuttal-7AaZ-2-evidence-2">[Figure 2]</a></span></p><div class="rebuttal-evidence"><h5>Supporting evidence</h5><figure class="rebuttal-evidence-item" id="rebuttal-7AaZ-2-evidence-1" tabindex="-1"><figcaption><span>Figure 1</span><a href="#rebuttal-7AaZ-2-evidence-1-ref" class="rebuttal-backlink">Back to answer ↑</a></figcaption><button type="button" class="figure-button" data-zoom-src="static/images/rebuttal/gth/success_curves_0-50.webp" aria-label="Enlarge Figure"><img src="static/images/rebuttal/gth/success_curves_0-50.webp" alt="" loading="lazy" decoding="async"></button></figure>
+<figure class="rebuttal-evidence-item" id="rebuttal-7AaZ-2-evidence-2" tabindex="-1"><figcaption><span>Figure 2</span><a href="#rebuttal-7AaZ-2-evidence-2-ref" class="rebuttal-backlink">Back to answer ↑</a></figcaption><button type="button" class="figure-button" data-zoom-src="static/images/rebuttal/gth/action_loss_curves.webp" aria-label="Enlarge Figure"><img src="static/images/rebuttal/gth/action_loss_curves.webp" alt="" loading="lazy" decoding="async"></button></figure></div><button class="rebuttal-collapse" type="button">Show less ↑</button></div>
+      </details>
+    </article>
+<article class="rebuttal-item" id="rebuttal-7AaZ-3" aria-labelledby="rebuttal-7AaZ-3-title">
+      <div class="rebuttal-question-heading"><span class="rebuttal-question-code">W3</span><h3 id="rebuttal-7AaZ-3-title">Contributions of the data-generation components.</h3></div>
+      <details class="rebuttal-answer" id="rebuttal-7AaZ-3-answer">
+        <summary><span class="rebuttal-answer-label">Answer</span><span class="rebuttal-answer-preview">We thank the reviewer for this suggestion. We provide two additional comparisons on the Drawer Storage task, with both configurations within each comparison using the same initial grasp bank, planning budgets, and physical acceptance criteria.…</span><span class="rebuttal-disclosure"><span class="when-closed">Show more</span><span class="when-open">Show less</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></span></summary>
+        <div class="rebuttal-answer-body"><p>We thank the reviewer for this suggestion. We provide two additional comparisons on the Drawer Storage task, with both configurations within each comparison using the same initial grasp bank, planning budgets, and physical acceptance criteria. In comparison A, both configurations use uniform sampling from a relatively comprehensive grasp bank: enabling agent-guided motion configuration produces 8.7% more accepted trajectories per node-hour than using default motion without LLM calls. In comparison B, both configurations start from a small grasp bank and retain agent-guided bank expansion: allowing intermediate waypoints and speed adjustment produces 54.6% more accepted trajectories per node-hour than using default motion.</p>
+<button class="rebuttal-collapse" type="button">Show less ↑</button></div>
+      </details>
+    </article></div></section>
+<section class="rebuttal-panel" id="reviewer-gygZ" role="tabpanel" aria-labelledby="reviewer-gygZ-tab" tabindex="0"><div class="rebuttal-reviewer-intro"><p>We thank the reviewer for the detailed feedback. Below, W1a–W2c refer to the reviewer’s numbered weakness subpoints, and Q1–Q8 refer to the questions. We address the main concerns first, followed by the remaining questions and writing issues.</p>
+</div><section class="rebuttal-revision-summary" aria-labelledby="reviewer-gygZ-summary"><h3 id="reviewer-gygZ-summary">Summary of revisions and updates.</h3><p>In the revised manuscript, we have refined the presentation throughout and clarified the Base, position-generalization, and visual-generalization evaluation protocols, including their post-training data and object-placement ranges. We have added object-generalization results on five tasks in simulation and on real robots, and clarified the data-generation settings and simulation–real post-training comparison. We have also expanded the description of the data-generation pipeline and distinguished the optional agent-guided training framework from the main method. Our updated project website also provides additional simulation and real-robot rollouts illustrating the tasks and evaluation settings.</p>
+</section><div class="rebuttal-items"><article class="rebuttal-item" id="rebuttal-gygZ-1" aria-labelledby="rebuttal-gygZ-1-title">
+      <div class="rebuttal-question-heading"><span class="rebuttal-question-code">W1a</span><h3 id="rebuttal-gygZ-1-title">Novelty and comparison with HumanoidGen.</h3></div>
+      <details class="rebuttal-answer" id="rebuttal-gygZ-1-answer">
+        <summary><span class="rebuttal-answer-label">Answer</span><span class="rebuttal-answer-preview">We thank the reviewer for pointing out HumanoidGen; we will add a citation and discussion in the revised manuscript. Our work differs in both pipeline design and evaluation focus. HumanoidGen uses spatial annotations and LLM-generated…</span><span class="rebuttal-disclosure"><span class="when-closed">Show more</span><span class="when-open">Show less</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></span></summary>
+        <div class="rebuttal-answer-body"><p>We thank the reviewer for pointing out HumanoidGen; we will add a citation and discussion in the revised manuscript. Our work differs in both pipeline design and evaluation focus. HumanoidGen uses spatial annotations and LLM-generated relational constraints, with MCTS-based exploration for task planning. In contrast, our pipeline builds and incrementally expands an object-frame grasp bank, while the agent uses production feedback to configure grasp and scene sampling, bank expansion, and planning.</p>
+<p>Furthermore, HumanoidGen primarily evaluates its generated demonstrations through task-level policy learning, whereas we use the generated data for large-scale WAM pre-training and study downstream adaptation in simulation and on real robots. To support this scale, we combine grasp reuse and expansion with feedback-guided sampling and physical verification, and analyze their effects on production efficiency within our pipeline.</p>
+<button class="rebuttal-collapse" type="button">Show less ↑</button></div>
+      </details>
+    </article>
+<article class="rebuttal-item" id="rebuttal-gygZ-2" aria-labelledby="rebuttal-gygZ-2-title">
+      <div class="rebuttal-question-heading"><span class="rebuttal-question-code">W1b · W1c · Q7</span><h3 id="rebuttal-gygZ-2-title">Pre-training data composition and diversity.</h3></div>
+      <details class="rebuttal-answer" id="rebuttal-gygZ-2-answer">
+        <summary><span class="rebuttal-answer-label">Answer</span><span class="rebuttal-answer-preview">We prioritize general-object grasping and transfer because they are fundamental components of many manipulation tasks. We also include articulated-object interactions to provide experience with additional object types and behaviors. We agree…</span><span class="rebuttal-disclosure"><span class="when-closed">Show more</span><span class="when-open">Show less</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></span></summary>
+        <div class="rebuttal-answer-body"><p>We prioritize general-object grasping and transfer because they are fundamental components of many manipulation tasks. We also include articulated-object interactions to provide experience with additional object types and behaviors. We agree that the diversity of pre-training tasks can be further improved. Our pipeline can generate additional data covering more diverse tool use and articulated-object interaction, as well as contextualized pick-and-place tasks such as playing chess, organizing goods, and reorienting objects.</p>
+<p> We will incorporate these tasks into pre-training and evaluate their effect on downstream performance.</p>
+<p>Our pre-training data were synthesized using 421 real-to-sim assets and 6,700 rigid-object assets from Objaverse 1.0. The real-to-sim assets, covering bottles, boxes, cans, tableware, and tools, were reconstructed from physical objects to better match their real-world geometry. The Objaverse assets were selected for their suitable size and object categories for tabletop manipulation, providing broader category coverage, including toys, miniature furniture, household items, food, tableware, tools, and sports equipment. We will add these asset counts and their sources to the revised manuscript.</p>
+<p>The paired failure data consists of trajectories from other task categories that did not pass physical verification but were selected after additional review. They are included to expose the video-generation model to physically plausible failure cases and help it learn physical dynamics. We apologize that this was not clearly described in the original submission, and the latest version of the manuscript now includes these details.</p>
+<p class="rebuttal-reference-overview"><span class="rebuttal-reference-intro">The videos show tool use, articulated-object manipulation, and contextualized pick-and-place tasks.</span><span class="rebuttal-reference-links"><a class="rebuttal-reference" id="rebuttal-gygZ-2-evidence-1-ref" href="#rebuttal-gygZ-2-evidence-1">[Video 1]</a></span></p><div class="rebuttal-evidence"><h5>Supporting evidence</h5><figure class="rebuttal-evidence-item" id="rebuttal-gygZ-2-evidence-1" tabindex="-1"><figcaption><span>Video 1</span><a href="#rebuttal-gygZ-2-evidence-1-ref" class="rebuttal-backlink">Back to answer ↑</a></figcaption><div data-rebuttal-evidence="Video"><div class="rebuttal-four-video-row"><div class="rebuttal-task-video"><p class="rebuttal-task-video-name">Hammer Use</p><div class="media-frame has-media video-frame" style="aspect-ratio:960 / 816"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/diversity/hammer_use.webp" aria-label="Hammer Use — 2× speed"><source data-src="static/videos/rebuttal/task-diversity/hammer_use.mp4" type="video/mp4"></video></div></div><div class="rebuttal-task-video"><p class="rebuttal-task-video-name">Compact Transfer</p><div class="media-frame has-media video-frame" style="aspect-ratio:960 / 816"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/diversity/compact_transfer.webp" aria-label="Compact Transfer — 2× speed"><source data-src="static/videos/rebuttal/task-diversity/compact_transfer.mp4" type="video/mp4"></video></div></div><div class="rebuttal-task-video"><p class="rebuttal-task-video-name">Chess</p><div class="media-frame has-media video-frame" style="aspect-ratio:960 / 816"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/diversity/chess.webp" aria-label="Chess — 2× speed"><source data-src="static/videos/rebuttal/task-diversity/chess.mp4" type="video/mp4"></video></div></div><div class="rebuttal-task-video"><p class="rebuttal-task-video-name">Microwave</p><div class="media-frame has-media video-frame" style="aspect-ratio:960 / 816"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/diversity/microwave.webp" aria-label="Microwave — 2× speed"><source data-src="static/videos/rebuttal/task-diversity/microwave.mp4" type="video/mp4"></video></div></div></div></div>
+
+</figure></div><button class="rebuttal-collapse" type="button">Show less ↑</button></div>
+      </details>
+    </article>
+<article class="rebuttal-item" id="rebuttal-gygZ-3" aria-labelledby="rebuttal-gygZ-3-title">
+      <div class="rebuttal-question-heading"><span class="rebuttal-question-code">W1d · W1e · Q1</span><h3 id="rebuttal-gygZ-3-title">Evaluation scope and public benchmark.</h3></div>
+      <details class="rebuttal-answer" id="rebuttal-gygZ-3-answer">
+        <summary><span class="rebuttal-answer-label">Answer</span><span class="rebuttal-answer-preview">In our main experiments, DexSimWAM and the baselines use the same task-specific demonstrations and evaluation settings. The reported results therefore primarily measure performance on tasks after in-domain post-training, rather than zero-shot…</span><span class="rebuttal-disclosure"><span class="when-closed">Show more</span><span class="when-open">Show less</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></span></summary>
+        <div class="rebuttal-answer-body"><p>In our main experiments, DexSimWAM and the baselines use the same task-specific demonstrations and evaluation settings. The reported results therefore primarily measure performance on tasks after in-domain post-training, rather than zero-shot generalization to unseen tasks. We also evaluate generalization beyond this setting in two ways: direct sim-to-real deployment after simulation-only post-training (Table 16), and direct evaluation of the pretrained model on PnP in previously unseen task scenes without task-specific post-training (Table 2(b)). Both tables are in the latest version of the manuscript. The real-robot main results further show that simulation pre-training can support task adaptation using real-robot data.</p>
+<p>To evaluate adaptation to a different embodiment and observation setup on a public benchmark, we evaluate DexSimWAM, LDA-1B, and the pretrained T-Rex [1] model without tactile input on five manually selected RoboCasa GR-1 Tabletop Tasks [2]. For each method, we jointly post-train a single model on a mixture of demonstrations from all five tasks, using 480 demonstrations per task, with a global batch size of 64 for 30k steps, and evaluate it on each task over 48 trials. Success rates (%) are:</p>
+<p class="rebuttal-reference-overview"><span class="rebuttal-reference-intro">The table and videos present success rates and representative successful and failed rollouts on five RoboCasa tasks.</span><span class="rebuttal-reference-links"><a class="rebuttal-reference" id="rebuttal-gygZ-3-evidence-1-ref" href="#rebuttal-gygZ-3-evidence-1">[Table 1]</a> <a class="rebuttal-reference" id="rebuttal-gygZ-3-evidence-2-ref" href="#rebuttal-gygZ-3-evidence-2">[Video 2]</a></span></p><div class="rebuttal-evidence"><h5>Supporting evidence</h5><figure class="rebuttal-evidence-item" id="rebuttal-gygZ-3-evidence-1" tabindex="-1"><figcaption><span>Table 1</span><a href="#rebuttal-gygZ-3-evidence-1-ref" class="rebuttal-backlink">Back to answer ↑</a></figcaption><div data-rebuttal-evidence="Table"><div class="rebuttal-table-scroll"><table class="robocasa-results"><thead><tr><th scope="col">Task</th><th scope="col">DexSimWAM</th><th scope="col">LDA-1B</th><th scope="col">T-Rex</th></tr></thead><tbody><tr><th scope="row">PnP Can to Drawer Close</th><td class="best">72.92</td><td class="runner-up">62.50</td><td>56.25</td></tr><tr><th scope="row">PnP Milk to Microwave Close</th><td class="best">56.25</td><td>43.75</td><td class="runner-up">52.08</td></tr><tr><th scope="row">PnP Novel from Cutting Board to Pan</th><td class="best">52.08</td><td class="runner-up">10.42</td><td>6.25</td></tr><tr><th scope="row">PnP Novel from Placemat to Plate</th><td class="best">25.00</td><td>2.08</td><td class="runner-up">10.42</td></tr><tr><th scope="row">PnP Novel from Plate to Cardboard Box</th><td class="best">18.75</td><td class="runner-up">12.50</td><td class="runner-up">12.50</td></tr><tr class="mean-row"><th scope="row">Five-task mean</th><td class="best">45.00</td><td>26.25</td><td class="runner-up">27.50</td></tr></tbody></table></div></div>
+
+</figure>
+<figure class="rebuttal-evidence-item" id="rebuttal-gygZ-3-evidence-2" tabindex="-1"><figcaption><span>Video 2</span><a href="#rebuttal-gygZ-3-evidence-2-ref" class="rebuttal-backlink">Back to answer ↑</a></figcaption><div data-rebuttal-evidence="Video"><div class="simulation-task rebuttal-rollouts" data-simulation-carousel style="--simulation-aspect: 256 / 160"><p class="rollout-active-caption" data-active-caption>PnP Can to Drawer Close · Success 1</p><div class="simulation-types" role="group" aria-label="RoboCasa rollout selection"><button class="simulation-pill" type="button" data-slide="0" aria-pressed="true" aria-controls="rebuttal-gygZ-3-rollout-0">Can to Drawer · Success 1</button><button class="simulation-pill" type="button" data-slide="1" aria-pressed="false" aria-controls="rebuttal-gygZ-3-rollout-1">Can to Drawer · Success 2</button><button class="simulation-pill" type="button" data-slide="2" aria-pressed="false" aria-controls="rebuttal-gygZ-3-rollout-2">Can to Drawer · Failure</button><button class="simulation-pill" type="button" data-slide="3" aria-pressed="false" aria-controls="rebuttal-gygZ-3-rollout-3">Milk to Microwave · Success 1</button><button class="simulation-pill" type="button" data-slide="4" aria-pressed="false" aria-controls="rebuttal-gygZ-3-rollout-4">Milk to Microwave · Success 2</button><button class="simulation-pill" type="button" data-slide="5" aria-pressed="false" aria-controls="rebuttal-gygZ-3-rollout-5">Milk to Microwave · Failure</button><button class="simulation-pill" type="button" data-slide="6" aria-pressed="false" aria-controls="rebuttal-gygZ-3-rollout-6">Cutting Board to Pan · Success 1</button><button class="simulation-pill" type="button" data-slide="7" aria-pressed="false" aria-controls="rebuttal-gygZ-3-rollout-7">Cutting Board to Pan · Success 2</button><button class="simulation-pill" type="button" data-slide="8" aria-pressed="false" aria-controls="rebuttal-gygZ-3-rollout-8">Cutting Board to Pan · Failure</button><button class="simulation-pill" type="button" data-slide="9" aria-pressed="false" aria-controls="rebuttal-gygZ-3-rollout-9">Placemat to Plate · Success 1</button><button class="simulation-pill" type="button" data-slide="10" aria-pressed="false" aria-controls="rebuttal-gygZ-3-rollout-10">Placemat to Plate · Success 2</button><button class="simulation-pill" type="button" data-slide="11" aria-pressed="false" aria-controls="rebuttal-gygZ-3-rollout-11">Placemat to Plate · Failure</button><button class="simulation-pill" type="button" data-slide="12" aria-pressed="false" aria-controls="rebuttal-gygZ-3-rollout-12">Plate to Box · Success 1</button><button class="simulation-pill" type="button" data-slide="13" aria-pressed="false" aria-controls="rebuttal-gygZ-3-rollout-13">Plate to Box · Success 2</button><button class="simulation-pill" type="button" data-slide="14" aria-pressed="false" aria-controls="rebuttal-gygZ-3-rollout-14">Plate to Box · Failure</button></div><div class="simulation-carousel"><button class="simulation-arrow simulation-prev" type="button" aria-label="Previous RoboCasa rollout">‹</button><div class="simulation-track" tabindex="0" role="group" aria-label="RoboCasa rollouts"><div class="simulation-slide" id="rebuttal-gygZ-3-rollout-0" data-caption="PnP Can to Drawer Close · Success 1"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task0_SUC1.webp" aria-label="PnP Can to Drawer Close · Success 1"><source data-src="static/videos/rebuttal/robocasa/task0_SUC1.mp4" type="video/mp4"></video></div></div><div class="simulation-slide" id="rebuttal-gygZ-3-rollout-1" data-caption="PnP Can to Drawer Close · Success 2"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task0_SUC2.webp" aria-label="PnP Can to Drawer Close · Success 2"><source data-src="static/videos/rebuttal/robocasa/task0_SUC2.mp4" type="video/mp4"></video></div></div><div class="simulation-slide" id="rebuttal-gygZ-3-rollout-2" data-caption="PnP Can to Drawer Close · Failure"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task0_FAIL.webp" aria-label="PnP Can to Drawer Close · Failure"><source data-src="static/videos/rebuttal/robocasa/task0_FAIL.mp4" type="video/mp4"></video></div></div><div class="simulation-slide" id="rebuttal-gygZ-3-rollout-3" data-caption="PnP Milk to Microwave Close · Success 1"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task1_SUC1.webp" aria-label="PnP Milk to Microwave Close · Success 1"><source data-src="static/videos/rebuttal/robocasa/task1_SUC1.mp4" type="video/mp4"></video></div></div><div class="simulation-slide" id="rebuttal-gygZ-3-rollout-4" data-caption="PnP Milk to Microwave Close · Success 2"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task1_SUC2.webp" aria-label="PnP Milk to Microwave Close · Success 2"><source data-src="static/videos/rebuttal/robocasa/task1_SUC2.mp4" type="video/mp4"></video></div></div><div class="simulation-slide" id="rebuttal-gygZ-3-rollout-5" data-caption="PnP Milk to Microwave Close · Failure"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task1_FAIL.webp" aria-label="PnP Milk to Microwave Close · Failure"><source data-src="static/videos/rebuttal/robocasa/task1_FAIL.mp4" type="video/mp4"></video></div></div><div class="simulation-slide" id="rebuttal-gygZ-3-rollout-6" data-caption="PnP Novel from Cutting Board to Pan · Success 1"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task2_SUC1.webp" aria-label="PnP Novel from Cutting Board to Pan · Success 1"><source data-src="static/videos/rebuttal/robocasa/task2_SUC1.mp4" type="video/mp4"></video></div></div><div class="simulation-slide" id="rebuttal-gygZ-3-rollout-7" data-caption="PnP Novel from Cutting Board to Pan · Success 2"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task2_SUC2.webp" aria-label="PnP Novel from Cutting Board to Pan · Success 2"><source data-src="static/videos/rebuttal/robocasa/task2_SUC2.mp4" type="video/mp4"></video></div></div><div class="simulation-slide" id="rebuttal-gygZ-3-rollout-8" data-caption="PnP Novel from Cutting Board to Pan · Failure"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task2_FAIL.webp" aria-label="PnP Novel from Cutting Board to Pan · Failure"><source data-src="static/videos/rebuttal/robocasa/task2_FAIL.mp4" type="video/mp4"></video></div></div><div class="simulation-slide" id="rebuttal-gygZ-3-rollout-9" data-caption="PnP Novel from Placemat to Plate · Success 1"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task3_SUC1.webp" aria-label="PnP Novel from Placemat to Plate · Success 1"><source data-src="static/videos/rebuttal/robocasa/task3_SUC1.mp4" type="video/mp4"></video></div></div><div class="simulation-slide" id="rebuttal-gygZ-3-rollout-10" data-caption="PnP Novel from Placemat to Plate · Success 2"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task3_SUC2.webp" aria-label="PnP Novel from Placemat to Plate · Success 2"><source data-src="static/videos/rebuttal/robocasa/task3_SUC2.mp4" type="video/mp4"></video></div></div><div class="simulation-slide" id="rebuttal-gygZ-3-rollout-11" data-caption="PnP Novel from Placemat to Plate · Failure"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task3_FAIL.webp" aria-label="PnP Novel from Placemat to Plate · Failure"><source data-src="static/videos/rebuttal/robocasa/task3_FAIL.mp4" type="video/mp4"></video></div></div><div class="simulation-slide" id="rebuttal-gygZ-3-rollout-12" data-caption="PnP Novel from Plate to Cardboard Box · Success 1"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task4_SUC1.webp" aria-label="PnP Novel from Plate to Cardboard Box · Success 1"><source data-src="static/videos/rebuttal/robocasa/task4_SUC1.mp4" type="video/mp4"></video></div></div><div class="simulation-slide" id="rebuttal-gygZ-3-rollout-13" data-caption="PnP Novel from Plate to Cardboard Box · Success 2"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task4_SUC2.webp" aria-label="PnP Novel from Plate to Cardboard Box · Success 2"><source data-src="static/videos/rebuttal/robocasa/task4_SUC2.mp4" type="video/mp4"></video></div></div><div class="simulation-slide" id="rebuttal-gygZ-3-rollout-14" data-caption="PnP Novel from Plate to Cardboard Box · Failure"><div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/rebuttal/gth/task4_FAIL.webp" aria-label="PnP Novel from Plate to Cardboard Box · Failure"><source data-src="static/videos/rebuttal/robocasa/task4_FAIL.mp4" type="video/mp4"></video></div></div></div><button class="simulation-arrow simulation-next" type="button" aria-label="Next RoboCasa rollout">›</button></div></div></div></figure></div><button class="rebuttal-collapse" type="button">Show less ↑</button></div>
+      </details>
+    </article>
+<article class="rebuttal-item" id="rebuttal-gygZ-4" aria-labelledby="rebuttal-gygZ-4-title">
+      <div class="rebuttal-question-heading"><span class="rebuttal-question-code">W2a · Q8</span><h3 id="rebuttal-gygZ-4-title">Baseline pre-training and comparison.</h3></div>
+      <details class="rebuttal-answer" id="rebuttal-gygZ-4-answer">
+        <summary><span class="rebuttal-answer-label">Answer</span><span class="rebuttal-answer-preview">We note that LDA-1B is not pretrained solely on parallel-gripper data: its pre-training corpus includes substantial human-hand interaction data, and its downstream evaluations include dexterous-hand manipulation. We therefore consider it a…</span><span class="rebuttal-disclosure"><span class="when-closed">Show more</span><span class="when-open">Show less</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></span></summary>
+        <div class="rebuttal-answer-body"><p>We note that LDA-1B is not pretrained solely on parallel-gripper data: its pre-training corpus includes substantial human-hand interaction data, and its downstream evaluations include dexterous-hand manipulation. We therefore consider it a relevant baseline for our setting. In addition, as described above, our supplementary RoboCasa evaluation includes T-Rex pretrained on dexterous manipulation data, using the version without tactile pre-training. Its results provide a further comparison with a dexterity-oriented pretrained model.</p>
+<button class="rebuttal-collapse" type="button">Show less ↑</button></div>
+      </details>
+    </article>
+<article class="rebuttal-item" id="rebuttal-gygZ-5" aria-labelledby="rebuttal-gygZ-5-title">
+      <div class="rebuttal-question-heading"><span class="rebuttal-question-code">W2b</span><h3 id="rebuttal-gygZ-5-title">Experimental focus and analysis.</h3></div>
+      <details class="rebuttal-answer" id="rebuttal-gygZ-5-answer">
+        <summary><span class="rebuttal-answer-label">Answer</span><span class="rebuttal-answer-preview">We have streamlined parts of the experimental setup descriptions, reorganized the main-results section, and added a summary of the ablation findings in the appendix. We will further revise and streamline the experimental section to better…</span><span class="rebuttal-disclosure"><span class="when-closed">Show more</span><span class="when-open">Show less</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></span></summary>
+        <div class="rebuttal-answer-body"><p>We have streamlined parts of the experimental setup descriptions, reorganized the main-results section, and added a summary of the ablation findings in the appendix. We will further revise and streamline the experimental section to better highlight the key results and their analysis.</p>
+<button class="rebuttal-collapse" type="button">Show less ↑</button></div>
+      </details>
+    </article>
+<article class="rebuttal-item" id="rebuttal-gygZ-6" aria-labelledby="rebuttal-gygZ-6-title">
+      <div class="rebuttal-question-heading"><span class="rebuttal-question-code">W2c</span><h3 id="rebuttal-gygZ-6-title">Pre-training benefits across tasks.</h3></div>
+      <details class="rebuttal-answer" id="rebuttal-gygZ-6-answer">
+        <summary><span class="rebuttal-answer-label">Answer</span><span class="rebuttal-answer-preview">To assess whether the benefit of pre-training extends beyond the original real-robot task, we compare models with and without pre-training on two additional simulation tasks under the P.G. setting, using the same post-training data and training…</span><span class="rebuttal-disclosure"><span class="when-closed">Show more</span><span class="when-open">Show less</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></span></summary>
+        <div class="rebuttal-answer-body"><p>To assess whether the benefit of pre-training extends beyond the original real-robot task, we compare models with and without pre-training on two additional simulation tasks under the P.G. setting, using the same post-training data and training configuration. After post-training, models initialized from the pretrained checkpoint achieve 39.6% success on 6D-Pose Transfer and 27.1% on Tabletop Waste Clearing, compared with 25.0% and 18.8% for models without pre-training, respectively. These results show that the benefit of pre-training extends beyond the original real-robot task.</p>
+<button class="rebuttal-collapse" type="button">Show less ↑</button></div>
+      </details>
+    </article>
+<article class="rebuttal-item" id="rebuttal-gygZ-7" aria-labelledby="rebuttal-gygZ-7-title">
+      <div class="rebuttal-question-heading"><span class="rebuttal-question-code">Q2</span><h3 id="rebuttal-gygZ-7-title">Direct sim-to-real transfer.</h3></div>
+      <details class="rebuttal-answer" id="rebuttal-gygZ-7-answer">
+        <summary><span class="rebuttal-answer-label">Answer</span><span class="rebuttal-answer-preview">Yes. We evaluate direct sim-to-real transfer on a real-robot pick-and-place task involving a Sprite can and a pear. After post-training using only synthesized simulation trajectories, DexSimWAM achieves a 45.8% success rate on the real robot…</span><span class="rebuttal-disclosure"><span class="when-closed">Show more</span><span class="when-open">Show less</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></span></summary>
+        <div class="rebuttal-answer-body"><p>Yes. We evaluate direct sim-to-real transfer on a real-robot pick-and-place task involving a Sprite can and a pear. After post-training using only synthesized simulation trajectories, DexSimWAM achieves a 45.8% success rate on the real robot (Table 16 in the latest manuscript). Videos of the real-robot evaluation are available on our updated anonymous project website.</p>
+<p class="rebuttal-reference-overview"><span class="rebuttal-reference-intro">The video shows a sequential multi-object sim-to-real rollout.</span><span class="rebuttal-reference-links"><a class="rebuttal-reference" id="rebuttal-gygZ-7-evidence-1-ref" href="#rebuttal-gygZ-7-evidence-1">[Video 1]</a></span></p><div class="rebuttal-evidence"><h5>Supporting evidence</h5><figure class="rebuttal-evidence-item" id="rebuttal-gygZ-7-evidence-1" tabindex="-1"><figcaption><span>Video 1</span><a href="#rebuttal-gygZ-7-evidence-1-ref" class="rebuttal-backlink">Back to answer ↑</a></figcaption><div data-rebuttal-evidence="Video"><div class="media-frame has-media video-frame" style="aspect-ratio:16 / 9"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/posters/sim2real-pnp.jpg" aria-label="Sequential Multi-Object Pick-and-Place: Sim2Real"><source src="static/videos/real/sim2real-pnp.mp4" type="video/mp4"></video></div></div></figure></div><button class="rebuttal-collapse" type="button">Show less ↑</button></div>
+      </details>
+    </article>
+<article class="rebuttal-item" id="rebuttal-gygZ-8" aria-labelledby="rebuttal-gygZ-8-title">
+      <div class="rebuttal-question-heading"><span class="rebuttal-question-code">Q3</span><h3 id="rebuttal-gygZ-8-title">cuRobo constraints and budgets.</h3></div>
+      <details class="rebuttal-answer" id="rebuttal-gygZ-8-answer">
+        <summary><span class="rebuttal-answer-label">Answer</span><span class="rebuttal-answer-preview">We apologize for the unclear wording. Constraints specify collision margins and goal tolerances, while budgets bound planning time and retries for each phase. For example, a drawer phase uses a 0.004 m collision margin, a 0.01 rad robot-joint…</span><span class="rebuttal-disclosure"><span class="when-closed">Show more</span><span class="when-open">Show less</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></span></summary>
+        <div class="rebuttal-answer-body"><p>We apologize for the unclear wording. Constraints specify collision margins and goal tolerances, while budgets bound planning time and retries for each phase. For example, a drawer phase uses a 0.004 m collision margin, a 0.01 rad robot-joint goal tolerance, a 240 s time budget, and up to four retries. The agent can adjust planning budgets and introduce intermediate waypoints within a subtask while preserving its goals and required safety constraints. In the sequence “close the top drawer → open the middle drawer → return the left arm,” it can propose a retreat to a clearance configuration before the next motion. Each segment is planned by cuRobo under the shared phase budget and subsequently validated in MuJoCo.</p>
+<p class="rebuttal-reference-overview"><span class="rebuttal-reference-intro">The examples illustrate phase configuration, waypoint planning, and drawer manipulation with a recorded hand trajectory.</span><span class="rebuttal-reference-links"><a class="rebuttal-reference" id="rebuttal-gygZ-8-evidence-1-ref" href="#rebuttal-gygZ-8-evidence-1">[Code 1]</a> <a class="rebuttal-reference" id="rebuttal-gygZ-8-evidence-2-ref" href="#rebuttal-gygZ-8-evidence-2">[Code 2]</a> <a class="rebuttal-reference" id="rebuttal-gygZ-8-evidence-3-ref" href="#rebuttal-gygZ-8-evidence-3">[Video 3]</a></span></p><div class="rebuttal-evidence"><h5>Supporting evidence</h5><figure class="rebuttal-evidence-item" id="rebuttal-gygZ-8-evidence-1" tabindex="-1"><figcaption><span>Code 1</span><a href="#rebuttal-gygZ-8-evidence-1-ref" class="rebuttal-backlink">Back to answer ↑</a></figcaption><div class="rebuttal-code-scroll"><pre><code class="language-json">{
+  &quot;id&quot;: &quot;open_middle&quot;,
+  &quot;goal_relation&quot;: {&quot;type&quot;: &quot;open&quot;, &quot;target&quot;: &quot;middle&quot;},
+  &quot;collision&quot;: {&quot;margin_m&quot;: 0.004},
+  &quot;tolerance&quot;: {&quot;joint_rad&quot;: 0.01},
+  &quot;time_budget_s&quot;: 240.0,
+  &quot;retry_budget&quot;: 4,
+  &quot;motion&quot;: {
+    &quot;joint_waypoints&quot;: [
+      {&quot;fraction&quot;: 0.5, &quot;arm_offset_rad&quot;: [0, 0.1, 0, -0.1, 0, 0, 0]}
+    ],
+    &quot;scope&quot;: &quot;first_call&quot;,
+    &quot;speed_scale&quot;: 0.8
+  }
+}
+</code></pre>
+</div></figure>
+<figure class="rebuttal-evidence-item" id="rebuttal-gygZ-8-evidence-2" tabindex="-1"><figcaption><span>Code 2</span><a href="#rebuttal-gygZ-8-evidence-2-ref" class="rebuttal-backlink">Back to answer ↑</a></figcaption><div class="rebuttal-code-scroll"><pre><code class="language-python"># Set once when entering the phase.
+deadline = time.monotonic() + phase[&quot;time_budget_s&quot;]
+
+def plan_segment(start, goal):
+    remaining = deadline - time.monotonic()
+    if remaining &lt;= 0:
+        raise TimeoutError(&quot;Phase planning budget exhausted&quot;)
+    return curobo_plan(start, goal, timeout_s=remaining)
+
+segment_1 = plan_segment(start, waypoint)
+segment_2 = plan_segment(waypoint, goal)
+trajectory = concatenate(segment_1, segment_2)
+accepted = mujoco_verify(trajectory)
+</code></pre>
+</div></figure>
+<figure class="rebuttal-evidence-item" id="rebuttal-gygZ-8-evidence-3" tabindex="-1"><figcaption><span>Video 3</span><a href="#rebuttal-gygZ-8-evidence-3-ref" class="rebuttal-backlink">Back to answer ↑</a></figcaption><div data-rebuttal-evidence="Video"><div class="media-frame has-media video-frame" style="aspect-ratio:1280 / 800"><video class="loaded-media" controls muted loop playsinline preload="none" poster="static/images/rebuttal/hbc/drawer-planning.webp" aria-label="Drawer planning with hand trajectory"><source src="static/videos/rebuttal/hbc/drawer-planning.mp4" type="video/mp4"></video></div></div></figure></div><button class="rebuttal-collapse" type="button">Show less ↑</button></div>
+      </details>
+    </article>
+<article class="rebuttal-item" id="rebuttal-gygZ-9" aria-labelledby="rebuttal-gygZ-9-title">
+      <div class="rebuttal-question-heading"><span class="rebuttal-question-code">Q4</span><h3 id="rebuttal-gygZ-9-title">Quality control and sampling bias.</h3></div>
+      <details class="rebuttal-answer" id="rebuttal-gygZ-9-answer">
+        <summary><span class="rebuttal-answer-label">Answer</span><span class="rebuttal-answer-preview">We agree that success-oriented sampling can overrepresent easy or repetitive cases. We remove near-duplicate grasp candidates before admitting them to the grasp bank. For candidates associated with the same object and hand, the filter compares…</span><span class="rebuttal-disclosure"><span class="when-closed">Show more</span><span class="when-open">Show less</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></span></summary>
+        <div class="rebuttal-answer-body"><p>We agree that success-oriented sampling can overrepresent easy or repetitive cases. We remove near-duplicate grasp candidates before admitting them to the grasp bank. For candidates associated with the same object and hand, the filter compares their object-frame grasp poses and identifies duplicates using position and orientation thresholds:</p>
+<div class="rebuttal-code-scroll"><pre><code class="language-python"># Compare candidates for the same object and hand
+# using their object-frame grasp poses.
+duplicate = (
+    position_distance_m &lt;= 0.002
+    and rotation_distance_deg &lt;= 3.0
+)
+</code></pre>
+</div><p>Newly generated candidates also undergo physical checks before admission. For example, in one screwdriver grasp-bank expansion round, 11 candidates were generated, one passed the free-hand checks, and one was added to the bank:</p>
+<div class="rebuttal-code-scroll"><pre><code class="language-json">{
+  &quot;object_key&quot;: &quot;screwdriver_right&quot;,
+  &quot;round&quot;: 0,
+  &quot;generated&quot;: 11,
+  &quot;free_hand_passed&quot;: 1,
+  &quot;object_frame_added&quot;: 1,
+  &quot;bank_version&quot;: 2
+}
+</code></pre>
+</div><p>To address sampling bias, the agent receives coverage statistics and production feedback as preference context and can adjust scene-sampling weights, grasp selection, and planning settings to allocate attempts to underrepresented cases. These adjustments do not relax physical acceptance criteria. Grasp deduplication reduces local redundancy, while feedback-guided sampling is intended to improve coverage; neither alone guarantees a balanced distribution of accepted trajectories.</p>
+<button class="rebuttal-collapse" type="button">Show less ↑</button></div>
+      </details>
+    </article>
+<article class="rebuttal-item" id="rebuttal-gygZ-10" aria-labelledby="rebuttal-gygZ-10-title">
+      <div class="rebuttal-question-heading"><span class="rebuttal-question-code">Q5</span><h3 id="rebuttal-gygZ-10-title">Drawer state coverage and object-state representation.</h3></div>
+      <details class="rebuttal-answer" id="rebuttal-gygZ-10-answer">
+        <summary><span class="rebuttal-answer-label">Answer</span><span class="rebuttal-answer-preview">We apologize for the unclear wording. Figure 3 shows position- and orientation-conditioned statistics for objects in Drawer Storage scenes, rather than coverage of the drawers’ open and closed states. We have clarified this description in the…</span><span class="rebuttal-disclosure"><span class="when-closed">Show more</span><span class="when-open">Show less</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></span></summary>
+        <div class="rebuttal-answer-body"><p>We apologize for the unclear wording. Figure 3 shows position- and orientation-conditioned statistics for objects in Drawer Storage scenes, rather than coverage of the drawers’ open and closed states. We have clarified this description in the latest manuscript. In simulation, a rigid object is represented by its 6-DoF pose, whereas an articulated object additionally has generalized coordinates for its joints. For example, a drawer’s sliding-joint coordinate can be defined as <span class="rebuttal-math">q=0</span> when closed and <span class="rebuttal-math">q=l</span> when fully open, where <span class="rebuttal-math">l</span> is the joint’s travel range.</p>
+<button class="rebuttal-collapse" type="button">Show less ↑</button></div>
+      </details>
+    </article>
+<article class="rebuttal-item" id="rebuttal-gygZ-11" aria-labelledby="rebuttal-gygZ-11-title">
+      <div class="rebuttal-question-heading"><span class="rebuttal-question-code">Q6</span><h3 id="rebuttal-gygZ-11-title">Grasp semantics.</h3></div>
+      <details class="rebuttal-answer" id="rebuttal-gygZ-11-answer">
+        <summary><span class="rebuttal-answer-label">Answer</span><span class="rebuttal-answer-preview">We agree that physical feasibility alone does not guarantee semantic alignment. Our pipeline is task-conditioned: the task description specifies the relevant object part, grasp style, and downstream motion requirements, and the Agent-as-Guide…</span><span class="rebuttal-disclosure"><span class="when-closed">Show more</span><span class="when-open">Show less</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></span></summary>
+        <div class="rebuttal-answer-body"><p>We agree that physical feasibility alone does not guarantee semantic alignment. Our pipeline is task-conditioned: the task description specifies the relevant object part, grasp style, and downstream motion requirements, and the Agent-as-Guide uses this information to configure grasp retrieval, grasp-bank expansion, and task planning. The generated grasp poses are then filtered through manually specified gates, which include checks for grasp semantics.</p>
+<p class="rebuttal-reference-overview"><span class="rebuttal-reference-intro">The examples show a teapot-handle grasp instruction and contact-region and finger-depth checks for cup grasps.</span><span class="rebuttal-reference-links"><a class="rebuttal-reference" id="rebuttal-gygZ-11-evidence-1-ref" href="#rebuttal-gygZ-11-evidence-1">[Code 1]</a> <a class="rebuttal-reference" id="rebuttal-gygZ-11-evidence-2-ref" href="#rebuttal-gygZ-11-evidence-2">[Code 2]</a></span></p><div class="rebuttal-evidence"><h5>Supporting evidence</h5><figure class="rebuttal-evidence-item" id="rebuttal-gygZ-11-evidence-1" tabindex="-1"><figcaption><span>Code 1</span><a href="#rebuttal-gygZ-11-evidence-1-ref" class="rebuttal-backlink">Back to answer ↑</a></figcaption><div class="rebuttal-code-scroll"><pre><code class="language-text">Pour water from the teapot into the cup. Grasp the teapot by its handle,
+keep the spout unobstructed, and maintain a grasp compatible with pouring.
+</code></pre>
+</div></figure>
+<figure class="rebuttal-evidence-item" id="rebuttal-gygZ-11-evidence-2" tabindex="-1"><figcaption><span>Code 2</span><a href="#rebuttal-gygZ-11-evidence-2-ref" class="rebuttal-backlink">Back to answer ↑</a></figcaption><div class="rebuttal-code-scroll"><pre><code class="language-python">surface = cup.classify_contacts(points_object)
+penetration = cup.cavity_depth(finger_points, finger_bodies)
+accepted = (
+    general[&quot;passed&quot;]
+    and surface[&quot;passed&quot;]
+    and hand_surface_passed
+    and penetration[&quot;passed&quot;]
+)
+</code></pre>
+</div></figure></div><button class="rebuttal-collapse" type="button">Show less ↑</button></div>
+      </details>
+    </article>
+<article class="rebuttal-item" id="rebuttal-gygZ-12" aria-labelledby="rebuttal-gygZ-12-title">
+      <div class="rebuttal-question-heading"><span class="rebuttal-question-code">Writing</span><h3 id="rebuttal-gygZ-12-title">Writing and formatting.</h3></div>
+      <details class="rebuttal-answer" id="rebuttal-gygZ-12-answer">
+        <summary><span class="rebuttal-answer-label">Answer</span><span class="rebuttal-answer-preview">We have addressed the excessive whitespace, clarified the wording around the sampling schedule, and revised the paragraph headings in the Main Results section in the latest manuscript. By a fixed scheduler, we meant a predefined…</span><span class="rebuttal-disclosure"><span class="when-closed">Show more</span><span class="when-open">Show less</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></span></summary>
+        <div class="rebuttal-answer-body"><p>We have addressed the excessive whitespace, clarified the wording around the sampling schedule, and revised the paragraph headings in the Main Results section in the latest manuscript. By a fixed scheduler, we meant a predefined importance-sampling rule applied to preference statistics. We will also enlarge the text in Figure 1 in the next revision.</p>
+<button class="rebuttal-collapse" type="button">Show less ↑</button></div>
+      </details>
+    </article></div></section></div>
+    </section>
+    <!-- REBUTTAL:END -->
+    <section class="teaser-section page-width" id="teaser" aria-label="Overview video">
+      <figure>
+        <div class="media-frame teaser-frame has-media" data-audio="true">
+          <video class="loaded-media" controls loop playsinline preload="none" poster="static/images/posters/dexsimwam-overview.jpg" aria-label="DexSimWAM overview video">
+            <source data-src="static/videos/dexsimwam-overview.mp4?v=supplementary-15157" type="video/mp4">
+            Your browser does not support this video. <a href="static/videos/dexsimwam-overview.mp4?v=supplementary-15157">Open the video</a>.
+          </video>
+        </div>
+      </figure>
+    </section>
+    <section class="abstract-section section-tint" id="abstract" aria-labelledby="abstract-title">
+      <div class="page-width abstract-layout">
+        <div><h2 id="abstract-title">Abstract</h2></div>
+        <div class="abstract-content">
+            <p>Learning transferable dexterous manipulation policies is constrained by the scarcity of large-scale robot data. Simulation offers scale, but synthesizing dexterous trajectories is substantially harder than for grippers: the data must cover diverse multi-finger contacts and hand–object configurations while satisfying language-specified grasp and motion semantics. We introduce <em>DexSimWAM</em>, which combines an agent-guided, retrieval-based synthetic-data pipeline with large-scale World Action Model (WAM) pre-training and task-specific post-training. Given a task description and verifier feedback, the agent guides scene sampling, grasp retrieval, optimization-based path planning, and bounded expansion of a physically validated grasp bank. Deterministic filters and fixed whole-task verification yield a 16k-hour corpus spanning diverse objects, scenes, grasp styles, and unilateral and bimanual behaviors. On this corpus, we jointly pre-train DexSimWAM for video prediction and dexterous action generation. We then adapt the pretrained WAM through post-training with simulation trajectories, real-robot trajectories, or both, supporting pick-and-place, 6D object reorientation, functional object use, articulated-object interaction, and long-horizon object sorting and cleanup. We also evaluate direct sim-to-real transfer. Experiments on six dexterous manipulation tasks show that DexSimWAM generally outperforms strong baselines in simulation and on real robots.</p>
+        </div>
+      </div>
+    </section>
+    <section class="content-section page-width" id="framework" aria-labelledby="framework-title">
+      <div class="section-heading framework-heading"><h2 id="framework-title">DexSimWAM at a Glance</h2></div>
+      <figure class="framework-figure">
+        <!-- Framework figure rendered from dexsimwam_pipeline.pdf. -->
+        <button class="figure-button" type="button" data-zoom-src="static/images/dexsimwam-pipeline.png" aria-label="Enlarge the DexSimWAM framework diagram">
+          <img src="static/images/dexsimwam-pipeline.png" width="3200" height="1477" alt="DexSimWAM pipeline: grasp synthesis, task planning, physical verification, and domain randomization generate simulation data for WAM pre-training, followed by post-training with real-robot data for dexterous manipulation." loading="lazy">
+        </button>
+      </figure>
+      <div class="section-heading pipeline-heading"><h2 id="trajectory-pipeline-title">Agent-guided task-conditioned trajectory production pipeline</h2></div>
+      <figure class="framework-figure pipeline-figure" aria-labelledby="trajectory-pipeline-title">
+        <!-- Data-generation figure rendered from the first page of data-generation-pipeline.pdf. -->
+        <button class="figure-button" type="button" data-zoom-src="static/images/data-generation-pipeline-preview.png?v=slide1-clear" aria-label="Enlarge the DexSimWAM data generation pipeline">
+          <img src="static/images/data-generation-pipeline-preview.png?v=slide1-clear" width="3989" height="1459" alt="Agent-guided data generation pipeline with an object-frame grasp bank, taxonomy templates, task and scene inputs, task planning, physical verification, and rendering." loading="lazy">
+        </button>
+      </figure>
+    </section>
+<section class="content-section page-width" id="sim-to-real" aria-labelledby="transfer-title">
+      <div class="section-heading"><h2 id="transfer-title">Dexterous Manipulation in the Real World</h2></div>
+      <div class="real-task-grid">
+        <div class="media-grid two-columns real-task-row">
+          <article class="task-demo" data-variant-group aria-labelledby="real-pnpmulti-title">
+            <div class="task-demo-heading"><div class="task-demo-title"><h3 id="real-pnpmulti-title">Sequential <span class="task-name-part">Multi-Object</span> <span class="task-name-part">Pick-and-Place</span></h3><span class="media-annotation" data-task-speed>2× speed</span></div><span class="environment-tag real">REAL</span></div>
+            <div class="media-variant-tabs" role="tablist" aria-label="Sequential Multi-Object Pick-and-Place demonstrations">
+              <button type="button" id="real-pnpmulti-pg-tab" role="tab" aria-selected="true" aria-controls="real-pnpmulti-pg-panel" tabindex="0" data-display-speed="2× speed">P.G.</button>
+              <button type="button" id="real-pnpmulti-og-tab" role="tab" aria-selected="false" aria-controls="real-pnpmulti-og-panel" tabindex="-1" data-display-speed="2× speed">O.G.</button>
+              <button type="button" id="real-pnpmulti-sim2real-tab" role="tab" aria-selected="false" aria-controls="real-pnpmulti-sim2real-panel" tabindex="-1" data-display-speed="1× speed">Sim2Real</button>
+            </div>
+            <div class="media-variant-panel" id="real-pnpmulti-pg-panel" role="tabpanel" aria-labelledby="real-pnpmulti-pg-tab">
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/1101/pnpmulti-pg.jpg" aria-label="Sequential Multi-Object Pick-and-Place — P.G. — real-world demonstration">
+                  <source data-src="static/videos/real/1101-web/pnpmulti/pg.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/pnpmulti/pg.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-pnpmulti-og-panel" role="tabpanel" aria-labelledby="real-pnpmulti-og-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/1101/pnpmulti-og.jpg" aria-label="Sequential Multi-Object Pick-and-Place — O.G. — real-world demonstration">
+                  <source data-src="static/videos/real/1101-web/pnpmulti/og.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/pnpmulti/og.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-pnpmulti-sim2real-panel" role="tabpanel" aria-labelledby="real-pnpmulti-sim2real-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim2real-pnp.jpg" aria-label="Sequential Multi-Object Pick-and-Place — Sim2Real — real-world demonstration">
+                  <source data-src="static/videos/real/sim2real-pnp.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/sim2real-pnp.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+          </article>
+          <article class="task-demo" data-variant-group aria-labelledby="real-pnp6d-title">
+            <div class="task-demo-heading"><div class="task-demo-title"><h3 id="real-pnp6d-title">6D-Pose Transfer</h3></div><span class="environment-tag real">REAL</span></div>
+            <div class="media-variant-tabs" role="tablist" aria-label="6D-Pose Transfer demonstrations">
+              <button type="button" id="real-pnp6d-base-tab" role="tab" aria-selected="true" aria-controls="real-pnp6d-base-panel" tabindex="0">Base</button>
+              <button type="button" id="real-pnp6d-pg1-tab" role="tab" aria-selected="false" aria-controls="real-pnp6d-pg1-panel" tabindex="-1">P.G. 1</button>
+              <button type="button" id="real-pnp6d-pg2-tab" role="tab" aria-selected="false" aria-controls="real-pnp6d-pg2-panel" tabindex="-1">P.G. 2</button>
+              <button type="button" id="real-pnp6d-vg-tab" role="tab" aria-selected="false" aria-controls="real-pnp6d-vg-panel" tabindex="-1">V.G.</button>
+              <button type="button" id="real-pnp6d-og1-tab" role="tab" aria-selected="false" aria-controls="real-pnp6d-og1-panel" tabindex="-1">O.G. 1</button>
+              <button type="button" id="real-pnp6d-og2-tab" role="tab" aria-selected="false" aria-controls="real-pnp6d-og2-panel" tabindex="-1">O.G. 2</button>
+            </div>
+            <div class="media-variant-panel" id="real-pnp6d-base-panel" role="tabpanel" aria-labelledby="real-pnp6d-base-tab">
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/1101/pnp6d-base.jpg" aria-label="6D-Pose Transfer — Base — real-world demonstration">
+                  <source data-src="static/videos/real/1101-web/pnp6d/base.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/pnp6d/base.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-pnp6d-pg1-panel" role="tabpanel" aria-labelledby="real-pnp6d-pg1-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/1101/pnp6d-pg1.jpg" aria-label="6D-Pose Transfer — P.G. 1 — real-world demonstration">
+                  <source data-src="static/videos/real/1101-web/pnp6d/pg1.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/pnp6d/pg1.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-pnp6d-pg2-panel" role="tabpanel" aria-labelledby="real-pnp6d-pg2-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/1101/pnp6d-pg2.jpg" aria-label="6D-Pose Transfer — P.G. 2 — real-world demonstration">
+                  <source data-src="static/videos/real/1101-web/pnp6d/pg2.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/pnp6d/pg2.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-pnp6d-vg-panel" role="tabpanel" aria-labelledby="real-pnp6d-vg-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/1101/pnp6d-vg.jpg" aria-label="6D-Pose Transfer — V.G. — real-world demonstration">
+                  <source data-src="static/videos/real/1101-web/pnp6d/vg.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/pnp6d/vg.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-pnp6d-og1-panel" role="tabpanel" aria-labelledby="real-pnp6d-og1-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/1101/pnp6d-og1.jpg" aria-label="6D-Pose Transfer — O.G. 1 — real-world demonstration">
+                  <source data-src="static/videos/real/1101-web/pnp6d/og1.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/pnp6d/og1.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-pnp6d-og2-panel" role="tabpanel" aria-labelledby="real-pnp6d-og2-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/1101/pnp6d-og2.jpg" aria-label="6D-Pose Transfer — O.G. 2 — real-world demonstration">
+                  <source data-src="static/videos/real/1101-web/pnp6d/og2.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/pnp6d/og2.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+          </article>
+        </div>
+        <div class="media-grid three-columns real-task-row">
+          <article class="task-demo" data-variant-group aria-labelledby="real-teapot-title">
+            <div class="task-demo-heading"><div class="task-demo-title"><h3 id="real-teapot-title">Teapot Pouring</h3></div><span class="environment-tag real">REAL</span></div>
+            <div class="media-variant-tabs" role="tablist" aria-label="Teapot Pouring demonstrations">
+              <button type="button" id="real-teapot-base-tab" role="tab" aria-selected="true" aria-controls="real-teapot-base-panel" tabindex="0">Base</button>
+              <button type="button" id="real-teapot-pg1-tab" role="tab" aria-selected="false" aria-controls="real-teapot-pg1-panel" tabindex="-1">P.G. 1</button>
+              <button type="button" id="real-teapot-pg2-tab" role="tab" aria-selected="false" aria-controls="real-teapot-pg2-panel" tabindex="-1">P.G. 2</button>
+              <button type="button" id="real-teapot-vg-tab" role="tab" aria-selected="false" aria-controls="real-teapot-vg-panel" tabindex="-1">V.G.</button>
+              <button type="button" id="real-teapot-og-tab" role="tab" aria-selected="false" aria-controls="real-teapot-og-panel" tabindex="-1">O.G.</button>
+            </div>
+            <div class="media-variant-panel" id="real-teapot-base-panel" role="tabpanel" aria-labelledby="real-teapot-base-tab">
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/1101/teapot-base.jpg" aria-label="Teapot Pouring — Base — real-world demonstration">
+                  <source data-src="static/videos/real/1101-web/teapot/base.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/teapot/base.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-teapot-pg1-panel" role="tabpanel" aria-labelledby="real-teapot-pg1-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/1101/teapot-pg1.jpg" aria-label="Teapot Pouring — P.G. 1 — real-world demonstration">
+                  <source data-src="static/videos/real/1101-web/teapot/pg1.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/teapot/pg1.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-teapot-pg2-panel" role="tabpanel" aria-labelledby="real-teapot-pg2-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/1101/teapot-pg2.jpg" aria-label="Teapot Pouring — P.G. 2 — real-world demonstration">
+                  <source data-src="static/videos/real/1101-web/teapot/pg2.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/teapot/pg2.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-teapot-vg-panel" role="tabpanel" aria-labelledby="real-teapot-vg-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/1101/teapot-vg.jpg" aria-label="Teapot Pouring — V.G. — real-world demonstration">
+                  <source data-src="static/videos/real/1101-web/teapot/vg.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/teapot/vg.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-teapot-og-panel" role="tabpanel" aria-labelledby="real-teapot-og-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/1101/teapot-og.jpg" aria-label="Teapot Pouring — O.G. — real-world demonstration">
+                  <source data-src="static/videos/real/1101-web/teapot/og.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/teapot/og.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+          </article>
+          <article class="task-demo" data-variant-group aria-labelledby="real-drawer-title">
+            <div class="task-demo-heading"><div class="task-demo-title"><h3 id="real-drawer-title">Drawer Storage</h3><span class="media-annotation">Training-time RTC</span></div><span class="environment-tag real">REAL</span></div>
+            <div class="media-variant-tabs" role="tablist" aria-label="Drawer Storage demonstrations">
+              <button type="button" id="real-drawer-base-tab" role="tab" aria-selected="true" aria-controls="real-drawer-base-panel" tabindex="0">Base</button>
+              <button type="button" id="real-drawer-pg1-tab" role="tab" aria-selected="false" aria-controls="real-drawer-pg1-panel" tabindex="-1">P.G. 1</button>
+              <button type="button" id="real-drawer-pg2-tab" role="tab" aria-selected="false" aria-controls="real-drawer-pg2-panel" tabindex="-1">P.G. 2</button>
+              <button type="button" id="real-drawer-vg-tab" role="tab" aria-selected="false" aria-controls="real-drawer-vg-panel" tabindex="-1">V.G.</button>
+              <button type="button" id="real-drawer-og-tab" role="tab" aria-selected="false" aria-controls="real-drawer-og-panel" tabindex="-1">O.G.</button>
+            </div>
+            <div class="media-variant-panel" id="real-drawer-base-panel" role="tabpanel" aria-labelledby="real-drawer-base-tab">
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/1101/drawer-base.jpg" aria-label="Drawer Storage — Base — real-world demonstration">
+                  <source data-src="static/videos/real/1101/drawer/base.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101/drawer/base.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-drawer-pg1-panel" role="tabpanel" aria-labelledby="real-drawer-pg1-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/1101/drawer-pg1.jpg" aria-label="Drawer Storage — P.G. 1 — real-world demonstration">
+                  <source data-src="static/videos/real/1101/drawer/pg1.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101/drawer/pg1.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-drawer-pg2-panel" role="tabpanel" aria-labelledby="real-drawer-pg2-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/1101/drawer-pg2.jpg" aria-label="Drawer Storage — P.G. 2 — real-world demonstration">
+                  <source data-src="static/videos/real/1101/drawer/pg2.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101/drawer/pg2.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-drawer-vg-panel" role="tabpanel" aria-labelledby="real-drawer-vg-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/1101/drawer-vg.jpg" aria-label="Drawer Storage — V.G. — real-world demonstration">
+                  <source data-src="static/videos/real/1101/drawer/vg.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101/drawer/vg.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+            <div class="media-variant-panel" id="real-drawer-og-panel" role="tabpanel" aria-labelledby="real-drawer-og-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/1101/drawer-og.jpg" aria-label="Drawer Storage — O.G. — real-world demonstration">
+                  <source data-src="static/videos/real/1101/drawer/og.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101/drawer/og.mp4">Open the video</a>.
+                </video>
+              </div>
+            </div>
+          </article>
+          <article class="task-demo" data-variant-group aria-labelledby="real-trash-bin-title">
+            <div class="task-demo-heading"><div class="task-demo-title"><h3 id="real-trash-bin-title">Tabletop Waste Clearing</h3></div><span class="environment-tag real">REAL</span></div>
+            <div class="media-variant-tabs" role="tablist" aria-label="Tabletop Waste Clearing demonstrations">
+              <button type="button" id="real-trash-bin-base-tab" role="tab" aria-selected="true" aria-controls="real-trash-bin-base-panel" tabindex="0">Base</button>
+              <button type="button" id="real-trash-bin-pg-tab" role="tab" aria-selected="false" aria-controls="real-trash-bin-pg-panel" tabindex="-1">P.G.</button>
+              <button type="button" id="real-trash-bin-vg-tab" role="tab" aria-selected="false" aria-controls="real-trash-bin-vg-panel" tabindex="-1">V.G.</button>
+              <button type="button" id="real-trash-bin-numg1-tab" role="tab" aria-selected="false" aria-controls="real-trash-bin-numg1-panel" tabindex="-1">N.G. 1</button>
+              <button type="button" id="real-trash-bin-numg2-tab" role="tab" aria-selected="false" aria-controls="real-trash-bin-numg2-panel" tabindex="-1">N.G. 2</button>
+            </div>
+            <div class="media-variant-panel" id="real-trash-bin-base-panel" role="tabpanel" aria-labelledby="real-trash-bin-base-tab">
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/1101/trash-bin-base.jpg" aria-label="Tabletop Waste Clearing — Base — real-world demonstration">
+                  <source data-src="static/videos/real/1101-web/trash-bin/base.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/trash-bin/base.mp4">Open the video</a>.
+                </video>
+              </div>
+              <p class="number-generalization-note is-placeholder" aria-hidden="true">Generalization to different numbers of waste objects.</p>
+            </div>
+            <div class="media-variant-panel" id="real-trash-bin-pg-panel" role="tabpanel" aria-labelledby="real-trash-bin-pg-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/1101/trash-bin-pg.jpg" aria-label="Tabletop Waste Clearing — P.G. — real-world demonstration">
+                  <source data-src="static/videos/real/1101-web/trash-bin/pg.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/trash-bin/pg.mp4">Open the video</a>.
+                </video>
+              </div>
+              <p class="number-generalization-note is-placeholder" aria-hidden="true">Generalization to different numbers of waste objects.</p>
+            </div>
+            <div class="media-variant-panel" id="real-trash-bin-vg-panel" role="tabpanel" aria-labelledby="real-trash-bin-vg-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/1101/trash-bin-vg.jpg" aria-label="Tabletop Waste Clearing — V.G. — real-world demonstration">
+                  <source data-src="static/videos/real/1101-web/trash-bin/vg.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/trash-bin/vg.mp4">Open the video</a>.
+                </video>
+              </div>
+              <p class="number-generalization-note is-placeholder" aria-hidden="true">Generalization to different numbers of waste objects.</p>
+            </div>
+            <div class="media-variant-panel" id="real-trash-bin-numg1-panel" role="tabpanel" aria-labelledby="real-trash-bin-numg1-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/1101/trash-bin-numg1.jpg" aria-label="Tabletop Waste Clearing — N.G. 1 — real-world demonstration">
+                  <source data-src="static/videos/real/1101-web/trash-bin/numg1.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/trash-bin/numg1.mp4">Open the video</a>.
+                </video>
+              </div>
+              <p class="number-generalization-note">Generalization to different numbers of waste objects.</p>
+            </div>
+            <div class="media-variant-panel" id="real-trash-bin-numg2-panel" role="tabpanel" aria-labelledby="real-trash-bin-numg2-tab" hidden>
+              <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/1101/trash-bin-numg2.jpg" aria-label="Tabletop Waste Clearing — N.G. 2 — real-world demonstration">
+                  <source data-src="static/videos/real/1101-web/trash-bin/numg2.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/1101-web/trash-bin/numg2.mp4">Open the video</a>.
+                </video>
+              </div>
+              <p class="number-generalization-note">Generalization to different numbers of waste objects.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+    <section class="content-section section-tint" id="drawer-rtc" aria-labelledby="drawer-rtc-title">
+      <div class="page-width">
+        <div class="section-heading"><h2 id="drawer-rtc-title">Drawer Manipulation with and without RTC</h2></div>
+        <div class="media-grid two-columns comparison-grid">
+          <figure class="media-card" id="real-drawer-non-rtc-panel">
+            <h3 class="comparison-label">Non-RTC</h3>
+                <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/real-drawer.jpg" aria-label="Drawer Storage — Non-RTC — real-world demonstration">
+                  <source data-src="static/videos/real/drawer.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/drawer.mp4">Open the video</a>.
+                </video>
+              </div>
+                <figcaption>Drawer manipulation without RTC.</figcaption>
+              </figure>
+          <figure class="media-card" id="real-drawer-training-time-rtc-panel">
+            <h3 class="comparison-label">Training-Time RTC</h3>
+                <div class="media-frame has-media video-frame">
+                <video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/real-drawer-training-time-rtc.jpg" aria-label="Drawer Storage — Training-Time RTC — real-world demonstration">
+                  <source data-src="static/videos/real/drawer-training-time-rtc.mp4" type="video/mp4">
+                  Your browser does not support this video. <a href="static/videos/real/drawer-training-time-rtc.mp4">Open the video</a>.
+                </video>
+              </div>
+                <figcaption>Drawer manipulation with training-time RTC.</figcaption>
+              </figure>
+        </div>
+      </div>
+    </section>
+    <section class="content-section section-tint" id="skills" aria-labelledby="skills-title">
+      <div class="page-width">
+        <div class="section-heading"><h2 id="skills-title">Dexterous Skills in Simulation</h2></div>
+        <div class="simulation-tasks">
+        <article class="simulation-task" data-simulation-carousel style="--simulation-aspect: 800 / 600" aria-labelledby="sim-pnp-title" aria-roledescription="carousel">
+          <div class="simulation-task-heading"><h3 id="sim-pnp-title">Single-Object Pick-and-Place</h3><span class="simulation-speed">1× speed</span></div>
+          <div class="simulation-types" role="group" aria-label="Single-Object Pick-and-Place video types"><button class="simulation-pill" type="button" data-slide="0" aria-pressed="true" aria-controls="sim-pnp-base1">Base 1</button><button class="simulation-pill" type="button" data-slide="1" aria-pressed="false" aria-controls="sim-pnp-base2">Base 2</button><button class="simulation-pill" type="button" data-slide="2" aria-pressed="false" aria-controls="sim-pnp-pg1">P.G. 1</button><button class="simulation-pill" type="button" data-slide="3" aria-pressed="false" aria-controls="sim-pnp-pg2">P.G. 2</button><button class="simulation-pill" type="button" data-slide="4" aria-pressed="false" aria-controls="sim-pnp-vg1">V.G.</button><button class="simulation-pill" type="button" data-slide="5" aria-pressed="false" aria-controls="sim-pnp-og1">O.G. 1</button><button class="simulation-pill" type="button" data-slide="6" aria-pressed="false" aria-controls="sim-pnp-og2">O.G. 2</button></div>
+          <div class="simulation-carousel">
+            <button class="simulation-arrow simulation-prev" type="button" aria-label="Previous Single-Object Pick-and-Place video"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button>
+            <div class="simulation-track" tabindex="0" role="group" aria-label="Single-Object Pick-and-Place videos"><div class="simulation-slide is-active" id="sim-pnp-base1" data-kind="base" role="group" aria-label="Base 1 · 1 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/pnp-base1.jpg" aria-label="Single-Object Pick-and-Place — Base 1 — simulation demonstration"><source data-src="static/videos/sim/1102/pnp-base1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/pnp-base1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-pnp-base2" data-kind="base" role="group" aria-label="Base 2 · 2 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/pnp-base2.jpg" aria-label="Single-Object Pick-and-Place — Base 2 — simulation demonstration"><source data-src="static/videos/sim/1102/pnp-base2.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/pnp-base2.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-pnp-pg1" data-kind="pg" role="group" aria-label="P.G. 1 · 3 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/pnp-pg1.jpg" aria-label="Single-Object Pick-and-Place — P.G. 1 — simulation demonstration"><source data-src="static/videos/sim/1102/pnp-pg1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/pnp-pg1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-pnp-pg2" data-kind="pg" role="group" aria-label="P.G. 2 · 4 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/pnp-pg2.jpg" aria-label="Single-Object Pick-and-Place — P.G. 2 — simulation demonstration"><source data-src="static/videos/sim/1102/pnp-pg2.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/pnp-pg2.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-pnp-vg1" data-kind="vg" role="group" aria-label="V.G. · 5 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/pnp-vg1.jpg" aria-label="Single-Object Pick-and-Place — V.G. — simulation demonstration"><source data-src="static/videos/sim/1102/pnp-vg1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/pnp-vg1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-pnp-og1" data-kind="og" role="group" aria-label="O.G. 1 · 6 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/pnp-og1.jpg" aria-label="Single-Object Pick-and-Place — O.G. 1 — simulation demonstration"><source data-src="static/videos/sim/1102/pnp-og1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/pnp-og1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-pnp-og2" data-kind="og" role="group" aria-label="O.G. 2 · 7 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/pnp-og2.jpg" aria-label="Single-Object Pick-and-Place — O.G. 2 — simulation demonstration"><source data-src="static/videos/sim/1102/pnp-og2.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/pnp-og2.mp4">Open the video</a>.</video></div>
+            </div></div>
+            <button class="simulation-arrow simulation-next" type="button" aria-label="Next Single-Object Pick-and-Place video"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6 6 6-6 6"/></svg></button>
+          </div>
+          <div class="simulation-dots" role="group" aria-label="Single-Object Pick-and-Place video position"><button type="button" class="simulation-dot" data-slide="0" aria-label="Show Base 1" aria-pressed="true" aria-controls="sim-pnp-base1"></button><button type="button" class="simulation-dot" data-slide="1" aria-label="Show Base 2" aria-pressed="false" aria-controls="sim-pnp-base2"></button><button type="button" class="simulation-dot" data-slide="2" aria-label="Show P.G. 1" aria-pressed="false" aria-controls="sim-pnp-pg1"></button><button type="button" class="simulation-dot" data-slide="3" aria-label="Show P.G. 2" aria-pressed="false" aria-controls="sim-pnp-pg2"></button><button type="button" class="simulation-dot" data-slide="4" aria-label="Show V.G." aria-pressed="false" aria-controls="sim-pnp-vg1"></button><button type="button" class="simulation-dot" data-slide="5" aria-label="Show O.G. 1" aria-pressed="false" aria-controls="sim-pnp-og1"></button><button type="button" class="simulation-dot" data-slide="6" aria-label="Show O.G. 2" aria-pressed="false" aria-controls="sim-pnp-og2"></button></div>
+        </article>
+        <article class="simulation-task" data-simulation-carousel style="--simulation-aspect: 800 / 800" aria-labelledby="sim-pnp6d-title" aria-roledescription="carousel">
+          <div class="simulation-task-heading"><h3 id="sim-pnp6d-title">6D-Pose Transfer</h3><span class="simulation-speed">3× speed</span></div>
+          <div class="simulation-types" role="group" aria-label="6D-Pose Transfer video types"><button class="simulation-pill" type="button" data-slide="0" aria-pressed="true" aria-controls="sim-pnp6d-base1">Base</button><button class="simulation-pill" type="button" data-slide="1" aria-pressed="false" aria-controls="sim-pnp6d-pg1">P.G. 1</button><button class="simulation-pill" type="button" data-slide="2" aria-pressed="false" aria-controls="sim-pnp6d-pg2">P.G. 2</button><button class="simulation-pill" type="button" data-slide="3" aria-pressed="false" aria-controls="sim-pnp6d-pg3">P.G. 3</button><button class="simulation-pill" type="button" data-slide="4" aria-pressed="false" aria-controls="sim-pnp6d-vg1">V.G.</button><button class="simulation-pill" type="button" data-slide="5" aria-pressed="false" aria-controls="sim-pnp6d-og1">O.G. 1</button><button class="simulation-pill" type="button" data-slide="6" aria-pressed="false" aria-controls="sim-pnp6d-og2">O.G. 2</button></div>
+          <div class="simulation-carousel">
+            <button class="simulation-arrow simulation-prev" type="button" aria-label="Previous 6D-Pose Transfer video"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button>
+            <div class="simulation-track" tabindex="0" role="group" aria-label="6D-Pose Transfer videos"><div class="simulation-slide is-active" id="sim-pnp6d-base1" data-kind="base" role="group" aria-label="Base · 1 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/pnp6d-base1.jpg" aria-label="6D-Pose Transfer — Base — simulation demonstration"><source data-src="static/videos/sim/1102/pnp6d-base1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/pnp6d-base1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-pnp6d-pg1" data-kind="pg" role="group" aria-label="P.G. 1 · 2 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/pnp6d-pg1.jpg" aria-label="6D-Pose Transfer — P.G. 1 — simulation demonstration"><source data-src="static/videos/sim/1102/pnp6d-pg1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/pnp6d-pg1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-pnp6d-pg2" data-kind="pg" role="group" aria-label="P.G. 2 · 3 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/pnp6d-pg2.jpg" aria-label="6D-Pose Transfer — P.G. 2 — simulation demonstration"><source data-src="static/videos/sim/1102/pnp6d-pg2.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/pnp6d-pg2.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-pnp6d-pg3" data-kind="pg" role="group" aria-label="P.G. 3 · 4 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/pnp6d-pg3.jpg" aria-label="6D-Pose Transfer — P.G. 3 — simulation demonstration"><source data-src="static/videos/sim/1102/pnp6d-pg3.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/pnp6d-pg3.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-pnp6d-vg1" data-kind="vg" role="group" aria-label="V.G. · 5 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/pnp6d-vg1.jpg" aria-label="6D-Pose Transfer — V.G. — simulation demonstration"><source data-src="static/videos/sim/1102/pnp6d-vg1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/pnp6d-vg1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-pnp6d-og1" data-kind="og" role="group" aria-label="O.G. 1 · 6 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/pnp6d-og1.jpg" aria-label="6D-Pose Transfer — O.G. 1 — simulation demonstration"><source data-src="static/videos/sim/1102/pnp6d-og1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/pnp6d-og1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-pnp6d-og2" data-kind="og" role="group" aria-label="O.G. 2 · 7 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/pnp6d-og2.jpg" aria-label="6D-Pose Transfer — O.G. 2 — simulation demonstration"><source data-src="static/videos/sim/1102/pnp6d-og2.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/pnp6d-og2.mp4">Open the video</a>.</video></div>
+            </div></div>
+            <button class="simulation-arrow simulation-next" type="button" aria-label="Next 6D-Pose Transfer video"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6 6 6-6 6"/></svg></button>
+          </div>
+          <div class="simulation-dots" role="group" aria-label="6D-Pose Transfer video position"><button type="button" class="simulation-dot" data-slide="0" aria-label="Show Base" aria-pressed="true" aria-controls="sim-pnp6d-base1"></button><button type="button" class="simulation-dot" data-slide="1" aria-label="Show P.G. 1" aria-pressed="false" aria-controls="sim-pnp6d-pg1"></button><button type="button" class="simulation-dot" data-slide="2" aria-label="Show P.G. 2" aria-pressed="false" aria-controls="sim-pnp6d-pg2"></button><button type="button" class="simulation-dot" data-slide="3" aria-label="Show P.G. 3" aria-pressed="false" aria-controls="sim-pnp6d-pg3"></button><button type="button" class="simulation-dot" data-slide="4" aria-label="Show V.G." aria-pressed="false" aria-controls="sim-pnp6d-vg1"></button><button type="button" class="simulation-dot" data-slide="5" aria-label="Show O.G. 1" aria-pressed="false" aria-controls="sim-pnp6d-og1"></button><button type="button" class="simulation-dot" data-slide="6" aria-label="Show O.G. 2" aria-pressed="false" aria-controls="sim-pnp6d-og2"></button></div>
+        </article>
+        <article class="simulation-task" data-simulation-carousel style="--simulation-aspect: 800 / 600" aria-labelledby="sim-teapot-title" aria-roledescription="carousel">
+          <div class="simulation-task-heading"><h3 id="sim-teapot-title">Teapot Pouring</h3><span class="simulation-speed">3× speed</span></div>
+          <div class="simulation-types" role="group" aria-label="Teapot Pouring video types"><button class="simulation-pill" type="button" data-slide="0" aria-pressed="true" aria-controls="sim-teapot-base1">Base</button><button class="simulation-pill" type="button" data-slide="1" aria-pressed="false" aria-controls="sim-teapot-pg1">P.G. 1</button><button class="simulation-pill" type="button" data-slide="2" aria-pressed="false" aria-controls="sim-teapot-pg2">P.G. 2</button><button class="simulation-pill" type="button" data-slide="3" aria-pressed="false" aria-controls="sim-teapot-vg1">V.G.</button><button class="simulation-pill" type="button" data-slide="4" aria-pressed="false" aria-controls="sim-teapot-og1">O.G. 1</button><button class="simulation-pill" type="button" data-slide="5" aria-pressed="false" aria-controls="sim-teapot-og2">O.G. 2</button></div>
+          <div class="simulation-carousel">
+            <button class="simulation-arrow simulation-prev" type="button" aria-label="Previous Teapot Pouring video"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button>
+            <div class="simulation-track" tabindex="0" role="group" aria-label="Teapot Pouring videos"><div class="simulation-slide is-active" id="sim-teapot-base1" data-kind="base" role="group" aria-label="Base · 1 of 6">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/teapot-base1.jpg" aria-label="Teapot Pouring — Base — simulation demonstration"><source data-src="static/videos/sim/1102/teapot-base1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/teapot-base1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-teapot-pg1" data-kind="pg" role="group" aria-label="P.G. 1 · 2 of 6">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/teapot-pg1.jpg" aria-label="Teapot Pouring — P.G. 1 — simulation demonstration"><source data-src="static/videos/sim/1102/teapot-pg1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/teapot-pg1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-teapot-pg2" data-kind="pg" role="group" aria-label="P.G. 2 · 3 of 6">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/teapot-pg2.jpg" aria-label="Teapot Pouring — P.G. 2 — simulation demonstration"><source data-src="static/videos/sim/1102/teapot-pg2.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/teapot-pg2.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-teapot-vg1" data-kind="vg" role="group" aria-label="V.G. · 4 of 6">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/teapot-vg1.jpg" aria-label="Teapot Pouring — V.G. — simulation demonstration"><source data-src="static/videos/sim/1102/teapot-vg1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/teapot-vg1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-teapot-og1" data-kind="og" role="group" aria-label="O.G. 1 · 5 of 6">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/teapot-og1.jpg" aria-label="Teapot Pouring — O.G. 1 — simulation demonstration"><source data-src="static/videos/sim/1102/teapot-og1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/teapot-og1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-teapot-og2" data-kind="og" role="group" aria-label="O.G. 2 · 6 of 6">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/teapot-og2.jpg" aria-label="Teapot Pouring — O.G. 2 — simulation demonstration"><source data-src="static/videos/sim/1102/teapot-og2.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/teapot-og2.mp4">Open the video</a>.</video></div>
+            </div></div>
+            <button class="simulation-arrow simulation-next" type="button" aria-label="Next Teapot Pouring video"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6 6 6-6 6"/></svg></button>
+          </div>
+          <div class="simulation-dots" role="group" aria-label="Teapot Pouring video position"><button type="button" class="simulation-dot" data-slide="0" aria-label="Show Base" aria-pressed="true" aria-controls="sim-teapot-base1"></button><button type="button" class="simulation-dot" data-slide="1" aria-label="Show P.G. 1" aria-pressed="false" aria-controls="sim-teapot-pg1"></button><button type="button" class="simulation-dot" data-slide="2" aria-label="Show P.G. 2" aria-pressed="false" aria-controls="sim-teapot-pg2"></button><button type="button" class="simulation-dot" data-slide="3" aria-label="Show V.G." aria-pressed="false" aria-controls="sim-teapot-vg1"></button><button type="button" class="simulation-dot" data-slide="4" aria-label="Show O.G. 1" aria-pressed="false" aria-controls="sim-teapot-og1"></button><button type="button" class="simulation-dot" data-slide="5" aria-label="Show O.G. 2" aria-pressed="false" aria-controls="sim-teapot-og2"></button></div>
+        </article>
+        <article class="simulation-task" data-simulation-carousel style="--simulation-aspect: 800 / 600" aria-labelledby="sim-drawer-title" aria-roledescription="carousel">
+          <div class="simulation-task-heading"><h3 id="sim-drawer-title">Drawer Storage</h3><span class="simulation-speed">2× speed</span></div>
+          <div class="simulation-types" role="group" aria-label="Drawer Storage video types"><button class="simulation-pill" type="button" data-slide="0" aria-pressed="true" aria-controls="sim-drawer-base1">Base</button><button class="simulation-pill" type="button" data-slide="1" aria-pressed="false" aria-controls="sim-drawer-pg1">P.G. 1</button><button class="simulation-pill" type="button" data-slide="2" aria-pressed="false" aria-controls="sim-drawer-pg2">P.G. 2</button><button class="simulation-pill" type="button" data-slide="3" aria-pressed="false" aria-controls="sim-drawer-pg3">P.G. 3</button><button class="simulation-pill" type="button" data-slide="4" aria-pressed="false" aria-controls="sim-drawer-vg1">V.G.</button><button class="simulation-pill" type="button" data-slide="5" aria-pressed="false" aria-controls="sim-drawer-og1">O.G.</button></div>
+          <div class="simulation-carousel">
+            <button class="simulation-arrow simulation-prev" type="button" aria-label="Previous Drawer Storage video"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button>
+            <div class="simulation-track" tabindex="0" role="group" aria-label="Drawer Storage videos"><div class="simulation-slide is-active" id="sim-drawer-base1" data-kind="base" role="group" aria-label="Base · 1 of 6">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/drawer-base1.jpg" aria-label="Drawer Storage — Base — simulation demonstration"><source data-src="static/videos/sim/1102/drawer-base1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/drawer-base1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-drawer-pg1" data-kind="pg" role="group" aria-label="P.G. 1 · 2 of 6">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/drawer-pg1.jpg" aria-label="Drawer Storage — P.G. 1 — simulation demonstration"><source data-src="static/videos/sim/1102/drawer-pg1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/drawer-pg1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-drawer-pg2" data-kind="pg" role="group" aria-label="P.G. 2 · 3 of 6">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/drawer-pg2.jpg" aria-label="Drawer Storage — P.G. 2 — simulation demonstration"><source data-src="static/videos/sim/1102/drawer-pg2.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/drawer-pg2.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-drawer-pg3" data-kind="pg" role="group" aria-label="P.G. 3 · 4 of 6">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/drawer-pg3.jpg" aria-label="Drawer Storage — P.G. 3 — simulation demonstration"><source data-src="static/videos/sim/1102/drawer-pg3.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/drawer-pg3.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-drawer-vg1" data-kind="vg" role="group" aria-label="V.G. · 5 of 6">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/drawer-vg1.jpg" aria-label="Drawer Storage — V.G. — simulation demonstration"><source data-src="static/videos/sim/1102/drawer-vg1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/drawer-vg1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-drawer-og1" data-kind="og" role="group" aria-label="O.G. · 6 of 6">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/drawer-og1.jpg" aria-label="Drawer Storage — O.G. — simulation demonstration"><source data-src="static/videos/sim/1102/drawer-og1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/drawer-og1.mp4">Open the video</a>.</video></div>
+            </div></div>
+            <button class="simulation-arrow simulation-next" type="button" aria-label="Next Drawer Storage video"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6 6 6-6 6"/></svg></button>
+          </div>
+          <div class="simulation-dots" role="group" aria-label="Drawer Storage video position"><button type="button" class="simulation-dot" data-slide="0" aria-label="Show Base" aria-pressed="true" aria-controls="sim-drawer-base1"></button><button type="button" class="simulation-dot" data-slide="1" aria-label="Show P.G. 1" aria-pressed="false" aria-controls="sim-drawer-pg1"></button><button type="button" class="simulation-dot" data-slide="2" aria-label="Show P.G. 2" aria-pressed="false" aria-controls="sim-drawer-pg2"></button><button type="button" class="simulation-dot" data-slide="3" aria-label="Show P.G. 3" aria-pressed="false" aria-controls="sim-drawer-pg3"></button><button type="button" class="simulation-dot" data-slide="4" aria-label="Show V.G." aria-pressed="false" aria-controls="sim-drawer-vg1"></button><button type="button" class="simulation-dot" data-slide="5" aria-label="Show O.G." aria-pressed="false" aria-controls="sim-drawer-og1"></button></div>
+        </article>
+        <article class="simulation-task" data-simulation-carousel style="--simulation-aspect: 800 / 800" aria-labelledby="sim-trash-bin-title" aria-roledescription="carousel">
+          <div class="simulation-task-heading"><h3 id="sim-trash-bin-title">Tabletop Waste Clearing</h3><span class="simulation-speed">2× speed</span></div>
+          <div class="simulation-types" role="group" aria-label="Tabletop Waste Clearing video types"><button class="simulation-pill" type="button" data-slide="0" aria-pressed="true" aria-controls="sim-trash-bin-base1">Base</button><button class="simulation-pill" type="button" data-slide="1" aria-pressed="false" aria-controls="sim-trash-bin-pg1">P.G. 1</button><button class="simulation-pill" type="button" data-slide="2" aria-pressed="false" aria-controls="sim-trash-bin-pg2">P.G. 2</button><button class="simulation-pill" type="button" data-slide="3" aria-pressed="false" aria-controls="sim-trash-bin-pg3">P.G. 3</button><button class="simulation-pill" type="button" data-slide="4" aria-pressed="false" aria-controls="sim-trash-bin-pg4">P.G. 4</button><button class="simulation-pill" type="button" data-slide="5" aria-pressed="false" aria-controls="sim-trash-bin-vg1">V.G.</button><button class="simulation-pill" type="button" data-slide="6" aria-pressed="false" aria-controls="sim-trash-bin-ng1">N.G.</button></div>
+          <div class="simulation-carousel">
+            <button class="simulation-arrow simulation-prev" type="button" aria-label="Previous Tabletop Waste Clearing video"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button>
+            <div class="simulation-track" tabindex="0" role="group" aria-label="Tabletop Waste Clearing videos"><div class="simulation-slide is-active" id="sim-trash-bin-base1" data-kind="base" role="group" aria-label="Base · 1 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/trash-bin-base1.jpg" aria-label="Tabletop Waste Clearing — Base — simulation demonstration"><source data-src="static/videos/sim/1102/trash-bin-base1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/trash-bin-base1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-trash-bin-pg1" data-kind="pg" role="group" aria-label="P.G. 1 · 2 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/trash-bin-pg1.jpg" aria-label="Tabletop Waste Clearing — P.G. 1 — simulation demonstration"><source data-src="static/videos/sim/1102/trash-bin-pg1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/trash-bin-pg1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-trash-bin-pg2" data-kind="pg" role="group" aria-label="P.G. 2 · 3 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/trash-bin-pg2.jpg" aria-label="Tabletop Waste Clearing — P.G. 2 — simulation demonstration"><source data-src="static/videos/sim/1102/trash-bin-pg2.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/trash-bin-pg2.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-trash-bin-pg3" data-kind="pg" role="group" aria-label="P.G. 3 · 4 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/trash-bin-pg3.jpg" aria-label="Tabletop Waste Clearing — P.G. 3 — simulation demonstration"><source data-src="static/videos/sim/1102/trash-bin-pg3.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/trash-bin-pg3.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-trash-bin-pg4" data-kind="pg" role="group" aria-label="P.G. 4 · 5 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/trash-bin-pg4.jpg" aria-label="Tabletop Waste Clearing — P.G. 4 — simulation demonstration"><source data-src="static/videos/sim/1102/trash-bin-pg4.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/trash-bin-pg4.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-trash-bin-vg1" data-kind="vg" role="group" aria-label="V.G. · 6 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/trash-bin-vg1.jpg" aria-label="Tabletop Waste Clearing — V.G. — simulation demonstration"><source data-src="static/videos/sim/1102/trash-bin-vg1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/trash-bin-vg1.mp4">Open the video</a>.</video></div>
+            </div><div class="simulation-slide" id="sim-trash-bin-ng1" data-kind="ng" role="group" aria-label="N.G. · 7 of 7">
+              <div class="media-frame has-media video-frame"><video class="loaded-media" controls muted loop playsinline preload="none" data-poster="static/images/posters/sim-1102/trash-bin-ng1.jpg" aria-label="Tabletop Waste Clearing — N.G. — simulation demonstration"><source data-src="static/videos/sim/1102/trash-bin-ng1.mp4" type="video/mp4">Your browser does not support this video. <a href="static/videos/sim/1102/trash-bin-ng1.mp4">Open the video</a>.</video></div>
+            </div></div>
+            <button class="simulation-arrow simulation-next" type="button" aria-label="Next Tabletop Waste Clearing video"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6 6 6-6 6"/></svg></button>
+          </div>
+          <div class="simulation-dots" role="group" aria-label="Tabletop Waste Clearing video position"><button type="button" class="simulation-dot" data-slide="0" aria-label="Show Base" aria-pressed="true" aria-controls="sim-trash-bin-base1"></button><button type="button" class="simulation-dot" data-slide="1" aria-label="Show P.G. 1" aria-pressed="false" aria-controls="sim-trash-bin-pg1"></button><button type="button" class="simulation-dot" data-slide="2" aria-label="Show P.G. 2" aria-pressed="false" aria-controls="sim-trash-bin-pg2"></button><button type="button" class="simulation-dot" data-slide="3" aria-label="Show P.G. 3" aria-pressed="false" aria-controls="sim-trash-bin-pg3"></button><button type="button" class="simulation-dot" data-slide="4" aria-label="Show P.G. 4" aria-pressed="false" aria-controls="sim-trash-bin-pg4"></button><button type="button" class="simulation-dot" data-slide="5" aria-label="Show V.G." aria-pressed="false" aria-controls="sim-trash-bin-vg1"></button><button type="button" class="simulation-dot" data-slide="6" aria-label="Show N.G." aria-pressed="false" aria-controls="sim-trash-bin-ng1"></button></div>
+        </article>
+        </div>
+      </div>
+    </section>
+    <section class="content-section rsi-section" id="results" aria-labelledby="results-title">
+      <div class="rsi-section-inner">
+        <div class="section-heading"><h2 id="results-title">Agent guided training</h2></div>
+        <div id="drawer-rsi-figure" class="drawer-rsi-figure" data-drawer-rsi-figure data-component-base="static/components/drawer-rsi/">
+        
+          <section aria-labelledby="drawer-rsi-heading">
+            <div class="drawer-figure-head">
+              <h2 id="drawer-rsi-heading">Drawer Policy Evolution under RSI</h2>
+              <div class="drawer-legend" aria-label="Methods">
+                <button type="button" data-series="RSI" aria-pressed="true">
+                  <span class="drawer-legend-mark" aria-hidden="true"></span>RSI
+                </button>
+                <button type="button" data-series="Baseline" aria-pressed="true">
+                  <span class="drawer-legend-mark baseline" aria-hidden="true"></span>Baseline
+                </button>
+              </div>
+            </div>
+        
+        
+            <div class="drawer-success-summary" aria-label="Highest RSI success rates during training">
+              <div class="drawer-success-stat">
+                <span>Overall task success rate</span>
+                <strong>84/96 (87.5%)</strong>
+                <em>step 14,652</em>
+              </div>
+              <div class="drawer-success-stat">
+                <span>Peak success-rate difference</span>
+                <strong>+13.5 pp</strong>
+                <em>RSI 87.5% − baseline 74.0%</em>
+              </div>
+              <div class="drawer-success-stat">
+                <span>Close best</span>
+                <strong>32/32 (100%)</strong>
+              </div>
+              <div class="drawer-success-stat">
+                <span>Open-middle best</span>
+                <strong>26/32 (81.3%)</strong>
+              </div>
+              <div class="drawer-success-stat">
+                <span>Open-top best</span>
+                <strong>31/32 (96.9%)</strong>
+              </div>
+            </div>
+        
+            <ol class="drawer-events-mobile" aria-label="Key RSI interventions">
+              <li>Step 6,700: Generate 3k synthetic episodes; C/M/T = 30/25/45.</li>
+              <li>Step 9,380: Generate 6k synthetic episodes; C/M/T = 20/25/55.</li>
+              <li>Step 12,060: Middle recovery; C/M/T = 15/35/50.</li>
+              <li>Step 18,693: Open rebalancing; C/M/T = 10/45/45.</li>
+            </ol>
+        
+            <div class="drawer-loading" role="status">Loading interactive chart…</div>
+            <div class="drawer-component-error" role="alert" aria-hidden="true"></div>
+            <div class="drawer-panels">
+              <div class="drawer-panel overall" data-metric="overall"></div>
+              <div class="drawer-panel" data-metric="close"></div>
+              <div class="drawer-panel" data-metric="middle"></div>
+              <div class="drawer-panel" data-metric="top"></div>
+              <div class="drawer-trajectory-panel" data-trajectory-panel></div>
+            </div>
+            <div class="drawer-tooltip" role="tooltip" aria-hidden="true"></div>
+          </section>
+        
+          <dialog class="drawer-detail-dialog" aria-labelledby="drawer-detail-title">
+            <div class="drawer-detail-shell">
+              <div class="drawer-detail-header">
+                <h3 id="drawer-detail-title">Evaluation details</h3>
+                <button type="button" class="drawer-detail-close" aria-label="Close details">×</button>
+              </div>
+              <div class="drawer-detail-content"></div>
+            </div>
+          </dialog>
+        
+          <noscript>This interactive figure requires JavaScript.</noscript>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer page-width">
+    <a class="footer-brand" href="#top"><svg class="icon"><use href="#icon-mark"/></svg>DexSimWAM</a>
+    <p class="template-credit">Website template licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>.</p>
+  </footer>
+  <button class="scroll-to-top" type="button" aria-label="Back to top" hidden><svg class="icon"><use href="#icon-up"/></svg></button>
+  <dialog class="figure-dialog" id="figure-dialog" aria-label="Expanded research figure"><button class="dialog-close" type="button" aria-label="Close expanded figure"><svg class="icon"><use href="#icon-close"/></svg></button><img alt=""></dialog>
+</body>
+</html>
